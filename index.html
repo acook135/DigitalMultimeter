@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Automotive Electrical Measurement Trainer - DMM: Volts, Amps &amp; Ohms</title>
+<style>
+  :root{
+    --navy:#00142E;        /* deep background */
+    --navy2:#00095B;       /* brand navy panels */
+    --blue:#066FEF;        /* brand bright blue */
+    --white:#FFFFFF;
+    --grey:#F0F0F0;
+    --ink:#0F0F0F;
+    --black:#000000;
+    --txt:#F0F0F0;
+    --dim:#A9C0DE;
+    --line:rgba(240,240,240,.18);
+    --ok:#27C06A; --warn:#FFB020; --bad:#FF5A5A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--navy);
+    color:var(--txt);
+    font:15px/1.55 "Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;
+    padding:12px 24px;
+    background:linear-gradient(180deg,#00095B 0%,#000E3F 60%,#00142E 100%);
+    border-bottom:3px solid var(--blue);
+  }
+  header .htext{min-width:0}
+  header h1{margin:0;font-size:21px;font-weight:700;letter-spacing:.2px;color:var(--white)}
+  header p{margin:4px 0 0;color:var(--dim);font-size:13px}
+  header .hlogo{height:52px;width:auto;display:block;flex:0 0 auto}
+  @media (max-width:760px){header{gap:10px}header h1{font-size:17px}header .hlogo{height:38px}}
+
+  /* ---- clarity helpers ---- */
+  .glab{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;color:#66A9F7;
+    font-weight:700;margin:14px 0 7px}
+  .glab:first-child{margin-top:0}
+  .chk{display:flex;gap:9px;align-items:flex-start;font-size:13px;padding:6px 9px;
+    border-radius:8px;background:rgba(255,255,255,.045);border:1px solid transparent;
+    margin-bottom:5px;color:#C7D6EA;line-height:1.45}
+  .chk:last-child{margin-bottom:0}
+  .chk.on{background:rgba(39,192,106,.13);border-color:rgba(39,192,106,.45);color:#DFF5E8}
+  .chk .tick{font-weight:700;width:15px;text-align:center;color:#7F92AB;flex:0 0 auto}
+  .chk.on .tick{color:var(--ok)}
+  .stat{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12.5px;
+    padding:10px 12px;border-radius:9px;background:rgba(0,0,0,.28);border:1px solid var(--line)}
+  .stat b{color:var(--dim);font-weight:400}
+  .stat span{font-family:ui-monospace,Consolas,monospace;color:#8FD8FF;text-align:right}
+  .stat span.off{color:#FF9E9E}
+  .dots{display:flex;gap:4px;margin:9px 0 11px;flex-wrap:wrap}
+  .dots i{width:22px;height:6px;border-radius:3px;background:#12325A;display:block}
+  .dots i.on{background:var(--blue);box-shadow:0 0 0 2px rgba(6,111,239,.3)}
+  .dots i.done{background:var(--ok)}
+  .hide{display:none!important}
+  .stepno{font-size:12px;color:#66A9F7;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:20px;padding:20px;align-items:start}
+  @media (max-width:1280px){.grid{grid-template-columns:1fr}}
+  .card{
+    background:var(--navy2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:18px;
+    box-shadow:0 2px 10px rgba(0,0,0,.35);
+  }
+  .card h2{
+    margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:1.4px;
+    color:var(--white);font-weight:700;padding-bottom:8px;border-bottom:2px solid var(--blue);
+  }
+  .stage{background:var(--navy2);border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:18px}
+  svg#scene{width:100%;height:auto;display:block;touch-action:none;user-select:none;-webkit-user-select:none}
+  .row{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:10px}
+  .row:last-child{margin-bottom:0}
+  button{
+    background:var(--navy);color:var(--txt);border:1px solid #2C5590;border-radius:9px;
+    padding:8px 12px;cursor:pointer;font-size:13.5px;font-family:inherit;line-height:1.3;
+    transition:background .12s,border-color .12s;
+  }
+  button:hover{border-color:var(--blue);background:#001B47}
+  button.on{background:var(--blue);border-color:var(--blue);color:var(--white);font-weight:600}
+  button.primary{background:var(--blue);border-color:var(--blue);color:var(--white);font-weight:700}
+  button.primary:hover{background:#2A86FF}
+  select{
+    background:var(--navy);color:var(--txt);border:1px solid #2C5590;border-radius:9px;
+    padding:8px 10px;font-size:13.5px;font-family:inherit;max-width:100%;
+  }
+  .msg{
+    border-radius:10px;padding:11px 13px;margin:8px 0 0;font-size:13.5px;line-height:1.5;
+    background:rgba(255,255,255,.06);border-left:5px solid var(--line);
+  }
+  .msg:first-child{margin-top:0}
+  .msg.ok{border-left-color:var(--ok)}
+  .msg.warn{border-left-color:var(--warn)}
+  .msg.bad{border-left-color:var(--bad)}
+  .msg.info{border-left-color:var(--blue)}
+  table.truth{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+  table.truth td{padding:6px 4px;border-bottom:1px solid rgba(240,240,240,.1);vertical-align:top}
+  table.truth td:first-child{color:var(--dim)}
+  table.truth td:last-child{text-align:right;font-family:ui-monospace,Consolas,monospace;color:#8FD8FF;white-space:nowrap}
+  .legend{display:grid;grid-template-columns:60px 1fr;gap:7px 12px;font-size:13px;align-items:baseline}
+  .legend b{color:#66A9F7;font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+  .legend span{color:var(--dim)}
+  .tasktitle{font-weight:700;font-size:15.5px;margin-bottom:6px;color:var(--white)}
+  .brief{font-size:13.5px;color:#DCE6F5;line-height:1.55}
+  .hint{
+    display:none;margin-top:10px;font-size:13px;color:#FFD98A;
+    background:rgba(255,176,32,.1);border:1px solid rgba(255,176,32,.45);
+    padding:10px 12px;border-radius:9px;line-height:1.5;
+  }
+  .hint.show{display:block}
+  .pill{
+    display:inline-block;font-size:11.5px;padding:3px 10px;border-radius:999px;
+    border:1px solid var(--line);color:var(--dim);vertical-align:middle;margin-left:6px;font-weight:400;letter-spacing:0;
+  }
+  .pill.hidden{border-color:var(--warn);color:var(--warn)}
+  .pill.okpill{border-color:var(--ok);color:var(--ok);font-weight:700}
+  .small{font-size:12.5px;color:var(--dim);line-height:1.55}
+  .kbd{
+    font-family:ui-monospace,Consolas,monospace;background:var(--navy);
+    border:1px solid #2C5590;border-radius:5px;padding:1px 6px;font-size:12.5px;color:var(--white)
+  }
+  .steps{margin:0;padding-left:20px;font-size:13.5px;color:#DCE6F5;line-height:1.6}
+  .steps li{margin-bottom:4px}
+  .rules{
+    margin-top:10px;padding:10px 12px;border-radius:9px;
+    background:rgba(6,111,239,.14);border:1px solid rgba(6,111,239,.5);font-size:13.5px;color:#DCE6F5
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="htext">
+    <h1>Digital Multimeter Workshop</h1>
+    <p>12&nbsp;V headlamp circuit &middot; volts, amps, ohms and continuity</p>
+  </div>
+  <img class="hlogo" alt="Henry Ford Academy"
+    src="data:image/png;base64,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">
+</header>
+
+<div class="grid">
+  <div>
+    <div class="stage">
+      <svg id="scene" viewBox="0 0 1300 770" role="img" aria-label="Interactive 12 volt circuit and digital multimeter">
+        <defs>
+          <linearGradient id="caseGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0A2A6B"/><stop offset="1" stop-color="#00072F"/>
+          </linearGradient>
+          <linearGradient id="faceGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E4E4E4"/>
+          </linearGradient>
+          <linearGradient id="lcdGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#E2EBDE"/><stop offset="1" stop-color="#C3D2BE"/>
+          </linearGradient>
+          <linearGradient id="knobGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#3A3F46"/><stop offset="1" stop-color="#0F0F0F"/>
+          </linearGradient>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stop-color="#FFF8D0" stop-opacity="1"/>
+            <stop offset="55%" stop-color="#FFD257" stop-opacity=".55"/>
+            <stop offset="100%" stop-color="#FFB800" stop-opacity="0"/>
+          </radialGradient>
+          <pattern id="hatch" width="10" height="10" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+            <rect width="10" height="10" fill="#001B3D"/>
+            <line x1="0" y1="0" x2="0" y2="10" stroke="#2C5590" stroke-width="4"/>
+          </pattern>
+          <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3"/>
+          </filter>
+          <filter id="shadow" x="-30%" y="-30%" width="170%" height="170%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity=".55"/>
+          </filter>
+        </defs>
+
+        <!-- ============================= CIRCUIT PANEL ============================= -->
+        <rect x="12" y="12" width="902" height="746" rx="16" fill="#00142E" stroke="#066FEF" stroke-opacity=".45" stroke-width="1.5"/>
+        <text x="34" y="46" fill="#FFFFFF" font-size="17" font-weight="700">Headlamp circuit &#8212; 12 V negative-earth system</text>
+        <text x="34" y="68" fill="#A9C0DE" font-size="12">B1 12.6 V &#183; F1 15 A fuse &#183; S1 lamp switch &#183; L1 and L2 lamps 2.4 &#937; in parallel &#183; G101 body earth</text>
+
+        <!-- wiring -->
+        <g id="wires" stroke="#C6DAF2" stroke-width="4.5" fill="none" stroke-linecap="round">
+          <path d="M75,250 V160 H140"/>
+          <path d="M190,160 H245"/>
+          <path d="M335,160 H388"/>
+          <path d="M472,160 H548"/>
+          <path d="M608,160 H830"/>
+          <path d="M155,250 V215 H230 V612"/>
+          <path d="M690,160 V215"/>
+          <path d="M690,303 V386"/>
+          <path d="M690,454 V540"/>
+          <path d="M830,160 V215"/>
+          <path d="M830,303 V386"/>
+          <path d="M830,454 V540"/>
+          <path d="M690,540 H830"/>
+          <path d="M760,540 V558"/>
+          <path id="strapWire" d="M760,581 V612"/>
+        </g>
+
+        <!-- chassis -->
+        <rect x="230" y="612" width="600" height="12" rx="4" fill="url(#hatch)" stroke="#2C5590" stroke-width="1.5"/>
+        <g stroke="#C6DAF2" stroke-width="4" stroke-linecap="round">
+          <line x1="560" y1="624" x2="560" y2="638"/>
+          <line x1="542" y1="638" x2="578" y2="638"/>
+          <line x1="549" y1="647" x2="571" y2="647"/>
+          <line x1="555" y1="656" x2="565" y2="656"/>
+        </g>
+        <text x="240" y="648" fill="#A9C0DE" font-size="12">Vehicle body / chassis = battery negative (B&#8722;)</text>
+
+        <!-- battery -->
+        <rect x="50" y="250" width="130" height="104" rx="10" fill="#001B3D" stroke="#C6DAF2" stroke-width="2.5"/>
+        <text x="115" y="286" text-anchor="middle" fill="#FFFFFF" font-size="15" font-weight="700">B1</text>
+        <text x="115" y="308" text-anchor="middle" fill="#8FD8FF" font-size="13">12.6 V</text>
+        <text x="115" y="330" text-anchor="middle" fill="#A9C0DE" font-size="11">r(int) 0.02 &#937;</text>
+        <text x="88" y="244" fill="#FF8A8A" font-size="16" font-weight="700">+</text>
+        <text x="170" y="244" fill="#C6DAF2" font-size="18" font-weight="700">&#8722;</text>
+
+        <!-- battery isolator -->
+        <g>
+          <circle cx="140" cy="160" r="5.5" fill="#C6DAF2"/>
+          <circle cx="190" cy="160" r="5.5" fill="#C6DAF2"/>
+          <line id="isoBlade" x1="140" y1="160" x2="192" y2="160" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+          <text x="165" y="128" text-anchor="middle" fill="#A9C0DE" font-size="12">battery isolator</text>
+          <rect id="isoHot" x="134" y="136" width="62" height="48" fill="transparent" style="cursor:pointer">
+            <title>Click to connect / disconnect the battery isolator</title>
+          </rect>
+        </g>
+
+        <!-- fuse F1 -->
+        <g>
+          <rect id="fuseBody" x="388" y="142" width="84" height="36" rx="8" fill="#001B3D" stroke="#C6DAF2" stroke-width="2.5"/>
+          <path id="fuseFil" d="M394,160 L408,150 L424,172 L440,150 L454,160 L466,160" stroke="#FFD257" stroke-width="3" fill="none"/>
+          <text x="430" y="112" text-anchor="middle" fill="#A9C0DE" font-size="12">F1 &#183; 15 A fuse</text>
+        </g>
+
+        <!-- switch S1 -->
+        <g>
+          <circle cx="548" cy="160" r="5.5" fill="#C6DAF2"/>
+          <circle cx="608" cy="160" r="5.5" fill="#C6DAF2"/>
+          <line id="s1Blade" x1="548" y1="160" x2="610" y2="160" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+          <text x="586" y="112" text-anchor="middle" fill="#A9C0DE" font-size="12">S1 lamp switch</text>
+          <rect id="s1Hot" x="546" y="136" width="64" height="48" fill="transparent" style="cursor:pointer">
+            <title>Click to switch the lamps on / off</title>
+          </rect>
+        </g>
+
+        <!-- splice -->
+        <circle cx="690" cy="160" r="6.5" fill="#C6DAF2"/>
+        <text x="760" y="112" text-anchor="middle" fill="#A9C0DE" font-size="12">SP1 splice &#183; feeds both lamps</text>
+
+        <!-- in-line connectors -->
+        <g id="connectors">
+          <rect x="245" y="146" width="26" height="28" rx="5" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2"/>
+          <rect x="309" y="146" width="26" height="28" rx="5" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2"/>
+          <line id="cb1link" x1="271" y1="160" x2="309" y2="160" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+          <rect id="cb1hot" x="274" y="146" width="32" height="28" fill="transparent" style="cursor:pointer"/>
+
+          <rect x="676" y="215" width="28" height="26" rx="5" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2"/>
+          <rect x="676" y="277" width="28" height="26" rx="5" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2"/>
+          <line id="cb2link" x1="690" y1="241" x2="690" y2="277" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+          <rect id="cb2hot" x="676" y="241" width="28" height="36" fill="transparent" style="cursor:pointer"/>
+
+          <rect x="816" y="215" width="28" height="26" rx="5" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2"/>
+          <rect x="816" y="277" width="28" height="26" rx="5" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2"/>
+          <line id="cb3link" x1="830" y1="241" x2="830" y2="277" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+          <rect id="cb3hot" x="816" y="241" width="28" height="36" fill="transparent" style="cursor:pointer"/>
+        </g>
+
+        <!-- connector state chips (clickable) -->
+        <g id="chip1g" style="cursor:pointer">
+          <rect id="chip1r" x="250" y="188" width="86" height="22" rx="7" fill="#001B3D" stroke="#066FEF" stroke-width="1.5"/>
+          <text id="chip1t" x="293" y="203" text-anchor="middle" fill="#A9C0DE" font-size="11.5">C1 &#183; JOINED</text>
+        </g>
+        <g id="chip2g" style="cursor:pointer">
+          <rect id="chip2r" x="647" y="182" width="86" height="22" rx="7" fill="#001B3D" stroke="#066FEF" stroke-width="1.5"/>
+          <text id="chip2t" x="690" y="197" text-anchor="middle" fill="#A9C0DE" font-size="11.5">C2 &#183; JOINED</text>
+        </g>
+        <g id="chip3g" style="cursor:pointer">
+          <rect id="chip3r" x="787" y="182" width="86" height="22" rx="7" fill="#001B3D" stroke="#066FEF" stroke-width="1.5"/>
+          <text id="chip3t" x="830" y="197" text-anchor="middle" fill="#A9C0DE" font-size="11.5">C3 &#183; JOINED</text>
+        </g>
+
+        <!-- lamps -->
+        <circle id="l1glow" cx="690" cy="420" r="66" fill="url(#glow)" opacity="0" filter="url(#soft)"/>
+        <circle cx="690" cy="420" r="34" fill="#001B3D" stroke="#C6DAF2" stroke-width="3"/>
+        <path id="l1fil" d="M667,397 L713,443 M713,397 L667,443" stroke="#C6DAF2" stroke-width="3"/>
+        <text x="640" y="414" text-anchor="end" fill="#FFFFFF" font-size="14" font-weight="700"
+              stroke="#00142E" stroke-width="4" style="paint-order:stroke">L1</text>
+        <text x="640" y="434" text-anchor="end" fill="#A9C0DE" font-size="11.5"
+              stroke="#00142E" stroke-width="4" style="paint-order:stroke">2.4 &#937;</text>
+
+        <circle id="l2glow" cx="830" cy="420" r="66" fill="url(#glow)" opacity="0" filter="url(#soft)"/>
+        <circle cx="830" cy="420" r="34" fill="#001B3D" stroke="#C6DAF2" stroke-width="3"/>
+        <path id="l2fil" d="M807,397 L853,443 M853,397 L807,443" stroke="#C6DAF2" stroke-width="3"/>
+        <text x="876" y="414" fill="#FFFFFF" font-size="14" font-weight="700"
+              stroke="#00142E" stroke-width="4" style="paint-order:stroke">L2</text>
+        <text x="876" y="434" fill="#A9C0DE" font-size="11.5"
+              stroke="#00142E" stroke-width="4" style="paint-order:stroke">2.4 &#937;</text>
+
+        <!-- earth bolt -->
+        <circle cx="760" cy="570" r="11" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2.5"/>
+        <text x="782" y="586" fill="#A9C0DE" font-size="12">earth bolt</text>
+        <text x="738" y="600" text-anchor="end" fill="#A9C0DE" font-size="12">earth strap</text>
+
+        <!-- test points injected by script -->
+        <g id="tpLayer"></g>
+
+        <!-- probe rest -->
+        <rect x="36" y="648" width="444" height="104" rx="12" fill="#001B3D" stroke="#2C5590" stroke-dasharray="7 6"/>
+        <text x="52" y="674" fill="#FFFFFF" font-size="12.5" font-weight="700" letter-spacing="1">PROBE REST</text>
+        <text x="52" y="694" fill="#A9C0DE" font-size="11.5">Drag a probe tip onto a test point,</text>
+        <text x="52" y="712" fill="#A9C0DE" font-size="11.5">or click a probe then click a point.</text>
+
+        <!-- ============================= MULTIMETER ============================= -->
+        <g id="meter" filter="url(#shadow)">
+          <rect x="930" y="24" width="350" height="724" rx="38" fill="url(#caseGrad)" stroke="#000000" stroke-width="3"/>
+          <rect x="942" y="36" width="326" height="700" rx="32" fill="none" stroke="#066FEF" stroke-width="4"/>
+          <rect x="956" y="50" width="298" height="672" rx="26" fill="url(#faceGrad)" stroke="#000000" stroke-width="2"/>
+          <text x="1105" y="76" text-anchor="middle" fill="#00095B" font-size="12" font-weight="700" letter-spacing="1.2">AUTO-RANGE DMM &#183; CAT III 600 V</text>
+
+          <!-- LCD -->
+          <rect x="970" y="88" width="270" height="112" rx="10" fill="url(#lcdGrad)" stroke="#0F0F0F" stroke-width="2.5"/>
+          <text id="lcdMode" x="984" y="112" fill="#16220F" font-size="13" font-weight="700">OFF</text>
+          <text id="lcdFlags" x="1226" y="112" text-anchor="end" fill="#16220F" font-size="12" font-weight="700"></text>
+          <text id="lcdMain" x="1196" y="168" text-anchor="end" fill="#0F1A0B" font-size="44" font-weight="700"
+                font-family="ui-monospace,Consolas,monospace"></text>
+          <text id="lcdUnit" x="1228" y="168" text-anchor="end" fill="#0F1A0B" font-size="18" font-weight="700"></text>
+          <text id="lcdNote" x="984" y="192" fill="#33452B" font-size="11.5"></text>
+
+          <!-- HOLD button + auto-range legend -->
+          <g id="holdBtn" style="cursor:pointer">
+            <rect id="holdRect" x="970" y="212" width="78" height="28" rx="8" fill="#066FEF" stroke="#00095B" stroke-width="1.5"/>
+            <text id="holdTxt" x="1009" y="231" text-anchor="middle" fill="#FFFFFF" font-size="12" font-weight="700">HOLD</text>
+          </g>
+          <text x="1240" y="231" text-anchor="end" fill="#00095B" font-size="11" font-weight="700" letter-spacing=".6">AUTO-RANGING</text>
+
+          <!-- dial -->
+          <circle cx="1105" cy="410" r="112" fill="#EAEAEA" stroke="#00095B" stroke-width="2"/>
+          <circle cx="1105" cy="410" r="72" fill="#DDDDDD" stroke="#B9B9B9" stroke-width="1"/>
+          <g id="dialLabels"></g>
+          <g id="knobGroup">
+            <circle id="knob" cx="1105" cy="410" r="56" fill="url(#knobGrad)" stroke="#000000" stroke-width="2.5" style="cursor:grab"/>
+            <g id="dialPointerG">
+              <rect x="1097" y="358" width="16" height="104" rx="8" fill="#2B3038" stroke="#000000" stroke-width="1.5" pointer-events="none"/>
+              <circle cx="1105" cy="366" r="6" fill="#FFFFFF" stroke="#000000" stroke-width="1.2" pointer-events="none"/>
+            </g>
+          </g>
+          <text x="1105" y="548" text-anchor="middle" fill="#00095B" font-size="11.5" font-weight="600">Turn the dial, or click a function</text>
+
+          <!-- jacks -->
+          <g id="jackA" style="cursor:pointer">
+            <circle cx="1000" cy="630" r="20" fill="#0F0F0F" stroke="#C8102E" stroke-width="5"/>
+            <circle id="plugA" cx="1000" cy="630" r="10" fill="#C8102E" opacity="0"/>
+            <text x="1000" y="596" text-anchor="middle" fill="#00095B" font-size="13" font-weight="700">10 A</text>
+            <text x="1000" y="668" text-anchor="middle" fill="#00095B" font-size="10.5">FUSED</text>
+          </g>
+          <g id="jackCOM">
+            <circle cx="1105" cy="630" r="20" fill="#0F0F0F" stroke="#0F0F0F" stroke-width="5"/>
+            <circle id="plugCOM" cx="1105" cy="630" r="10" fill="#2B3038" stroke="#000000"/>
+            <text x="1105" y="596" text-anchor="middle" fill="#00095B" font-size="13" font-weight="700">COM</text>
+            <text x="1105" y="668" text-anchor="middle" fill="#00095B" font-size="10.5">black lead</text>
+          </g>
+          <g id="jackV" style="cursor:pointer">
+            <circle cx="1210" cy="630" r="20" fill="#0F0F0F" stroke="#C8102E" stroke-width="5"/>
+            <circle id="plugV" cx="1210" cy="630" r="10" fill="#C8102E" opacity="0"/>
+            <text x="1210" y="596" text-anchor="middle" fill="#00095B" font-size="13" font-weight="700">V &#937; &#8226;)))</text>
+            <text x="1210" y="668" text-anchor="middle" fill="#00095B" font-size="10.5">red lead</text>
+          </g>
+        </g>
+
+        <!-- test leads (behind probes, in front of circuit) -->
+        <path id="leadBlack" fill="none" stroke="#0F0F0F" stroke-width="7" stroke-linecap="round" pointer-events="none"/>
+        <path id="leadBlackHi" fill="none" stroke="#3A3F46" stroke-width="2" stroke-linecap="round" pointer-events="none" opacity=".8"/>
+        <path id="leadRed" fill="none" stroke="#8E0E1A" stroke-width="7" stroke-linecap="round" pointer-events="none"/>
+        <path id="leadRedHi" fill="none" stroke="#E2313F" stroke-width="2" stroke-linecap="round" pointer-events="none" opacity=".9"/>
+
+        <!-- probes: tip at local origin, body/cable extend to the rear -->
+        <g id="probeBlack" style="cursor:grab">
+          <circle r="24" fill="transparent"/>
+          <g transform="rotate(35)">
+            <path d="M0,0 L22,-2.4 L22,2.4 Z" fill="#F5F7FA" stroke="#8894A6" stroke-width=".8"/>
+            <rect x="20" y="-4" width="15" height="8" rx="2" fill="#C8D2DE" stroke="#78839A" stroke-width=".8"/>
+            <path d="M35,-11 L41,-11 L41,11 L35,11 Z" fill="#2B3038" stroke="#000000" stroke-width="1"/>
+            <rect x="40" y="-12" width="66" height="24" rx="10" fill="#1B1E24" stroke="#000000" stroke-width="1.5"/>
+            <rect x="46" y="-8" width="7" height="16" rx="3" fill="#3A3F46"/>
+            <rect x="56" y="-8" width="7" height="16" rx="3" fill="#3A3F46"/>
+            <text x="83" y="4.5" text-anchor="middle" fill="#F0F0F0" font-size="10.5" font-weight="700" letter-spacing=".5">BLACK</text>
+            <rect x="104" y="-8" width="13" height="16" rx="4" fill="#0F0F0F" stroke="#000000" stroke-width="1"/>
+            <path d="M117,0 L128,0" stroke="#0F0F0F" stroke-width="7" stroke-linecap="round"/>
+          </g>
+        </g>
+        <g id="probeRed" style="cursor:grab">
+          <circle r="24" fill="transparent"/>
+          <g transform="rotate(35)">
+            <path d="M0,0 L22,-2.4 L22,2.4 Z" fill="#F5F7FA" stroke="#8894A6" stroke-width=".8"/>
+            <rect x="20" y="-4" width="15" height="8" rx="2" fill="#C8D2DE" stroke="#78839A" stroke-width=".8"/>
+            <path d="M35,-11 L41,-11 L41,11 L35,11 Z" fill="#5A0A11" stroke="#000000" stroke-width="1"/>
+            <rect x="40" y="-12" width="66" height="24" rx="10" fill="#B4141E" stroke="#5A0A11" stroke-width="1.5"/>
+            <rect x="46" y="-8" width="7" height="16" rx="3" fill="#8E0E1A"/>
+            <rect x="56" y="-8" width="7" height="16" rx="3" fill="#8E0E1A"/>
+            <text x="83" y="4.5" text-anchor="middle" fill="#FFFFFF" font-size="10.5" font-weight="700" letter-spacing=".5">RED</text>
+            <rect x="104" y="-8" width="13" height="16" rx="4" fill="#5A0A11" stroke="#000000" stroke-width="1"/>
+            <path d="M117,0 L128,0" stroke="#8E0E1A" stroke-width="7" stroke-linecap="round"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+
+  </div>
+
+  <aside>
+
+    <div class="card">
+      <h2>Start here &mdash; how to take a measurement</h2>
+      <ol class="steps">
+        <li><b>Turn the dial</b> to the function you need (click a function name, or drag the knob).</li>
+        <li><b>Check the red lead is in the right jack:</b> <span class="kbd">V&#937;</span> for volts, ohms and continuity &mdash; <span class="kbd">10 A</span> for current. Black always stays in <span class="kbd">COM</span>.</li>
+        <li><b>Place the probes:</b> drag each tip onto a labelled test point. The point rings in the probe colour when contact is made.</li>
+        <li><b>Read the display</b>, then press <b>Check my measurement</b>.</li>
+      </ol>
+      <div class="rules">
+        <b>Volts</b> &rarr; in <b>parallel</b>, across two points, circuit live.<br>
+        <b>Amps</b> &rarr; in <b>series</b>: open a joint and bridge the gap with the probes.<br>
+        <b>Ohms</b> &rarr; circuit <b>dead and isolated</b>, component disconnected.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Guided task <span id="progress" class="pill"></span></h2>
+      <div class="dots" id="stepDots"></div>
+      <div class="tasktitle" id="taskTitle"></div>
+      <div class="brief" id="taskBrief"></div>
+
+      <div class="glab">Set-up needed <span id="setupCount" class="pill"></span></div>
+      <div id="setupList"></div>
+
+      <div class="hint" id="taskHint"></div>
+      <div class="row" style="margin-top:12px">
+        <button id="btnPrev">&#9664; Previous</button>
+        <button id="btnNext">Next &#9654;</button>
+        <button id="btnHint">Show hint</button>
+      </div>
+      <div class="row">
+        <button id="btnCheck" class="primary" style="width:100%">Check my measurement</button>
+      </div>
+      <div id="taskFeedback"></div>
+    </div>
+
+    <div class="card">
+      <h2>Meter reading</h2>
+      <div class="stat">
+        <b>Dial</b><span id="stDial">&mdash;</span>
+        <b>Red lead in</b><span id="stJack">&mdash;</span>
+        <b>Red probe on</b><span id="stRed">&mdash;</span>
+        <b>Black probe on</b><span id="stBlk">&mdash;</span>
+        <b>Circuit</b><span id="stCirc">&mdash;</span>
+      </div>
+      <div id="readout" class="msg info" style="margin-top:10px">Dial is OFF.</div>
+      <div id="warnBox"></div>
+    </div>
+
+    <div class="card">
+      <h2>Circuit &amp; meter controls</h2>
+
+      <div class="glab">Circuit</div>
+      <div class="row">
+        <button id="btnIso">Battery isolator: CONNECTED</button>
+        <button id="btnS1">S1 lamp switch: OFF</button>
+      </div>
+      <div class="row">
+        <button id="btnC1">C1 joint: JOINED</button>
+        <button id="btnC2">C2 joint: JOINED</button>
+        <button id="btnC3">C3 joint: JOINED</button>
+      </div>
+
+      <div class="glab">Meter leads</div>
+      <div class="row">
+        <button id="btnJackV">Red lead &rarr; V&#937; jack</button>
+        <button id="btnJackA">Red lead &rarr; 10 A jack</button>
+        <button id="btnPark">Park both probes</button>
+      </div>
+
+      <div class="glab">Put things right</div>
+      <div class="row">
+        <button id="btnMeterFuse">Replace meter fuse</button>
+        <button id="btnCircFuse">Fit new F1 fuse</button>
+        <button id="btnReset">Reset circuit to normal</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Test point legend</h2>
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="card">
+      <h2>Instructor / assessor</h2>
+      <div class="row"><button id="instrToggle">Show instructor controls</button></div>
+      <div class="small">Hidden by default so a trainee cannot see the answer. Use
+        <b>Insert hidden random fault</b> for task&nbsp;10, then let them diagnose it.</div>
+      <div id="instrPanel" class="hide" style="margin-top:12px">
+        <div class="glab">Fit a fault</div>
+        <div class="row">
+          <select id="faultSel" style="width:100%">
+            <option value="none">No fault &mdash; healthy circuit</option>
+            <option value="fuse_blown">F1 fuse blown (open circuit)</option>
+            <option value="switch_hr">S1 switch high resistance (corroded, 4 &#937;)</option>
+            <option value="l1_open">L1 bulb open filament</option>
+            <option value="bad_ground">G101 earth strap high resistance (3 &#937;)</option>
+          </select>
+        </div>
+        <div class="row">
+          <button id="btnRandom">Insert hidden random fault</button>
+          <button id="btnReveal">Reveal live values</button>
+        </div>
+        <div id="truthBox"></div>
+      </div>
+
+      <div class="glab">My diagnosis</div>
+      <div class="row">
+        <select id="diagSel" style="flex:1 1 220px">
+          <option value="">&mdash; my diagnosis is&hellip; &mdash;</option>
+          <option value="none">Circuit is healthy</option>
+          <option value="fuse_blown">F1 fuse open circuit</option>
+          <option value="switch_hr">High resistance in S1 switch</option>
+          <option value="l1_open">L1 bulb open filament</option>
+          <option value="bad_ground">High resistance earth at G101</option>
+        </select>
+        <button id="btnDiag">Confirm</button>
+      </div>
+      <div id="diagFeedback"></div>
+    </div>
+
+  </aside>
+</div>
+
+<script>
+/* =========================================================================
+   1 | CIRCUIT MODEL
+   ========================================================================= */
+const OPEN   = 1e9;      // open circuit
+const RSHUNT = 0.01;     // ammeter shunt on the 10 A range
+const RVOLT  = 10e6;     // voltmeter input impedance
+const LAMP_R = 2.4;      // ohms per lamp (hot filament)
+const EMF    = 12.6;     // battery open-circuit volts
+const RINT   = 0.02;     // battery internal resistance
+const F1_RATING = 15;    // amps
+
+/* probe geometry: cable leaves the REAR of the handle (local x = 128, rotated 35 deg) */
+const PROBE_ROT  = 35 * Math.PI / 180;
+const REAR_DX = 128 * Math.cos(PROBE_ROT);
+const REAR_DY = 128 * Math.sin(PROBE_ROT);
+
+const state = {
+  mode:'off',              /* off | dcv | acv | adc | ohm | cont */
+  redJack:'v',             /* 'v' = V/ohm jack, 'a' = 10 A jack  */
+  meterFuse:'ok',
+  hold:false, heldLCD:null,
+  f1:'ok',
+  iso:true, s1:false,
+  c1:true, c2:true, c3:true,
+  fault:'none', faultHidden:false, reveal:false,
+  selected:null,
+  probes:{ red:{x:250,y:660,tp:null}, black:{x:355,y:660,tp:null} },
+  taskIdx:0,
+  done:{}
+};
+
+/* test points: x,y = contact position; lx,ly,anchor = label position */
+const TESTPOINTS = [
+  {id:'tp_bpos',    node:'bp',     x:75,  y:205, code:'B+',   lx:62,  ly:209, anchor:'end',    desc:'Battery positive post'},
+  {id:'tp_bneg',    node:'gnd',    x:196, y:215, code:'B-',   lx:196, ly:199, anchor:'middle', desc:'Battery negative post'},
+  {id:'cb1a',       node:'isoOut', x:258, y:160, code:'C1a',  lx:258, ly:134, anchor:'middle', desc:'C1 joint, battery / supply side'},
+  {id:'cb1b',       node:'fin',    x:322, y:160, code:'C1b',  lx:322, ly:134, anchor:'middle', desc:'C1 joint, fuse box side'},
+  {id:'tp_f_in',    node:'fin',    x:372, y:160, code:'F1a',  lx:372, ly:134, anchor:'middle', desc:'F1 fuse feed terminal (input)'},
+  {id:'tp_f_out',   node:'fout',   x:488, y:160, code:'F1b',  lx:488, ly:134, anchor:'middle', desc:'F1 fuse output terminal'},
+  {id:'tp_sw_in',   node:'swin',   x:532, y:160, code:'S1a',  lx:532, ly:134, anchor:'middle', desc:'S1 switch input terminal'},
+  {id:'tp_sw_out',  node:'swout',  x:624, y:160, code:'S1b',  lx:624, ly:134, anchor:'middle', desc:'S1 switch output terminal'},
+  {id:'tp_spl',     node:'spl',    x:760, y:160, code:'SP1',  lx:760, ly:134, anchor:'middle', desc:'Splice SP1, common feed to both lamps'},
+  {id:'cb2a',       node:'spl',    x:690, y:228, code:'C2a',  lx:668, ly:232, anchor:'end',    desc:'C2 joint, supply side'},
+  {id:'cb2b',       node:'l1t',    x:690, y:290, code:'C2b',  lx:668, ly:294, anchor:'end',    desc:'C2 joint, L1 lamp feed terminal'},
+  {id:'tp_l1b',     node:'l1b',    x:690, y:505, code:'L1g',  lx:668, ly:509, anchor:'end',    desc:'L1 earth-side terminal'},
+  {id:'cb3a',       node:'spl',    x:830, y:228, code:'C3a',  lx:852, ly:232, anchor:'start',  desc:'C3 joint, supply side'},
+  {id:'cb3b',       node:'l2t',    x:830, y:290, code:'C3b',  lx:852, ly:294, anchor:'start',  desc:'C3 joint, L2 lamp feed terminal'},
+  {id:'tp_l2b',     node:'l2b',    x:830, y:505, code:'L2g',  lx:852, ly:509, anchor:'start',  desc:'L2 earth-side terminal'},
+  {id:'tp_gbolt',   node:'gbolt',  x:760, y:570, code:'G101', lx:782, ly:566, anchor:'start',  desc:'Earth bolt G101 (load side of the strap)'},
+  {id:'tp_chassis', node:'gnd',    x:330, y:618, code:'CH',   lx:330, ly:600, anchor:'middle', desc:'Chassis / body earth (same node as B-)'}
+];
+const TP = {}; TESTPOINTS.forEach(t => TP[t.id] = t);
+
+const JOINTS = [
+  {key:'c1', a:'cb1a', b:'cb1b', name:'C1 (total circuit current)'},
+  {key:'c2', a:'cb2a', b:'cb2b', name:'C2 (L1 branch current)'},
+  {key:'c3', a:'cb3a', b:'cb3b', name:'C3 (L2 branch current)'}
+];
+
+function fuseBlown(){ return state.fault === 'fuse_blown' || state.f1 === 'blown'; }
+
+function buildNet(extra){
+  const els = [
+    {t:'B', a:'gnd',    b:'bp',     E:EMF, r:RINT},
+    {t:'R', a:'bp',     b:'isoOut', R: state.iso ? 0.005 : OPEN},
+    {t:'R', a:'isoOut', b:'fin',    R: state.c1 ? 0.003 : OPEN},
+    {t:'R', a:'fin',    b:'fout',   R: fuseBlown() ? OPEN : 0.02},
+    {t:'R', a:'fout',   b:'swin',   R: 0.008},
+    {t:'R', a:'swin',   b:'swout',  R: state.s1 ? (state.fault === 'switch_hr' ? 4.0 : 0.015) : OPEN},
+    {t:'R', a:'swout',  b:'spl',    R: 0.010},
+    {t:'R', a:'spl',    b:'l1t',    R: state.c2 ? 0.003 : OPEN},
+    {t:'R', a:'l1t',    b:'l1b',    R: state.fault === 'l1_open' ? OPEN : LAMP_R},
+    {t:'R', a:'spl',    b:'l2t',    R: state.c3 ? 0.003 : OPEN},
+    {t:'R', a:'l2t',    b:'l2b',    R: LAMP_R},
+    {t:'R', a:'l1b',    b:'gj',     R: 0.006},
+    {t:'R', a:'l2b',    b:'gj',     R: 0.006},
+    {t:'R', a:'gj',     b:'gbolt',  R: 0.006},
+    {t:'R', a:'gbolt',  b:'gnd',    R: state.fault === 'bad_ground' ? 3.0 : 0.010}
+  ];
+  return (extra && extra.length) ? els.concat(extra) : els;
+}
+
+function tpNode(which){ const p = state.probes[which]; return p.tp ? TP[p.tp].node : null; }
+
+/* the meter itself is part of the circuit: this is what makes the lamps
+   light up again when the ammeter bridges an opened joint                */
+function meterElements(){
+  const rn = tpNode('red'), bn = tpNode('black');
+  if(!rn || !bn) return [];
+  if(state.mode === 'dcv' || state.mode === 'acv') return [{t:'R', a:rn, b:bn, R:RVOLT}];
+  if(state.mode === 'adc' && state.redJack === 'a' && state.meterFuse === 'ok')
+    return [{t:'R', a:rn, b:bn, R:RSHUNT}];
+  return [];
+}
+function netWithMeter(){ return buildNet(meterElements()); }
+
+/* ---- nodal analysis + Gaussian elimination ---- */
+function gauss(A, b){
+  const n = b.length;
+  for(let i=0;i<n;i++){
+    let p = i;
+    for(let r=i+1;r<n;r++) if(Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r;
+    if(p !== i){ const tA=A[i]; A[i]=A[p]; A[p]=tA; const tb=b[i]; b[i]=b[p]; b[p]=tb; }
+    const d = A[i][i]; if(Math.abs(d) < 1e-20) continue;
+    for(let r=i+1;r<n;r++){
+      const f = A[r][i]/d; if(!f) continue;
+      for(let c=i;c<n;c++) A[r][c] -= f*A[i][c];
+      b[r] -= f*b[i];
+    }
+  }
+  const x = new Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    let s = b[i];
+    for(let c=i+1;c<n;c++) s -= A[i][c]*x[c];
+    x[i] = Math.abs(A[i][i]) < 1e-20 ? 0 : s/A[i][i];
+  }
+  return x;
+}
+function solveNet(els, ref, injections, useSources){
+  const names = new Set();
+  els.forEach(e => { names.add(e.a); names.add(e.b); });
+  if(injections) injections.forEach(i => names.add(i.node));
+  names.add(ref);
+  const list = [...names].filter(n => n !== ref);
+  const idx = {}; list.forEach((n,i) => idx[n] = i);
+  const N = list.length;
+  const A = Array.from({length:N}, () => new Array(N).fill(0));
+  const b = new Array(N).fill(0);
+  const addG = (a,c,g) => {
+    if(a in idx) A[idx[a]][idx[a]] += g;
+    if(c in idx) A[idx[c]][idx[c]] += g;
+    if(a in idx && c in idx){ A[idx[a]][idx[c]] -= g; A[idx[c]][idx[a]] -= g; }
+  };
+  els.forEach(e => {
+    if(e.t === 'R'){ addG(e.a, e.b, 1/e.R); }
+    else {
+      addG(e.a, e.b, 1/e.r);
+      if(useSources !== false){
+        if(e.b in idx) b[idx[e.b]] += e.E/e.r;
+        if(e.a in idx) b[idx[e.a]] -= e.E/e.r;
+      }
+    }
+  });
+  if(injections) injections.forEach(i => { if(i.node in idx) b[idx[i.node]] += i.amps; });
+  for(let i=0;i<N;i++) A[i][i] += 1e-12;
+  const x = gauss(A, b);
+  const V = {}; V[ref] = 0; list.forEach((n,i) => V[n] = x[i]);
+  return V;
+}
+
+/* what is really happening in the circuit (instructor view + lamp brightness) */
+function truth(){
+  const V = solveNet(netWithMeter(), 'gnd', null, true);
+  const strapR = state.fault === 'bad_ground' ? 3.0 : 0.010;
+  const r1 = state.fault === 'l1_open' ? OPEN : LAMP_R;
+  return {
+    V,
+    vBattTerm : V.bp,
+    iTotal    : (V.gbolt - V.gnd)/strapR,
+    i1        : (V.l1t - V.l1b)/r1,
+    i2        : (V.l2t - V.l2b)/LAMP_R,
+    vFuse     : V.fin - V.fout,
+    vSwitch   : V.swin - V.swout,
+    vLamp1    : V.l1t - V.l1b,
+    vLamp2    : V.l2t - V.l2b,
+    vEarth    : V.l1b - V.gnd
+  };
+}
+
+/* =========================================================================
+   2 | TAKING A READING
+   ========================================================================= */
+function jointFromProbes(){
+  const r = state.probes.red.tp, k = state.probes.black.tp;
+  if(!r || !k) return null;
+  for(const j of JOINTS) if((r===j.a && k===j.b) || (r===j.b && k===j.a)) return j;
+  return null;
+}
+
+function reading(){
+  const out = {main:'', unit:'', mode:'OFF', flags:'', note:'', value:null, valid:false,
+               warns:[], msg:'', cls:'info', beep:false};
+  const rp = state.probes.red, bp = state.probes.black;
+  const rn = tpNode('red'), bn = tpNode('black');
+  const bothOn = !!(rn && bn);
+
+  if(state.mode === 'off'){
+    out.msg = 'Dial is OFF. Select a measurement function to begin.';
+    return out;
+  }
+
+  /* ---------------- VOLTS ---------------- */
+  if(state.mode === 'dcv' || state.mode === 'acv'){
+    out.mode = state.mode === 'dcv' ? 'DC VOLTS' : 'AC VOLTS';
+    if(state.redJack !== 'v'){
+      out.main = '- - - -'; out.unit = 'V'; out.cls = 'bad';
+      out.msg = 'The red lead is in the 10 A jack. For voltage it must be in the VΩ jack.';
+      out.warns.push({cls:'bad', t:'Wrong jack: move the red lead to the VΩ jack before measuring voltage.'});
+      return out;
+    }
+    if(!bothOn){
+      out.main = '- - - -'; out.unit = 'V'; out.cls = 'warn';
+      out.msg = 'Both probes must be on a test point. A voltmeter compares two points, so it is always connected in parallel.';
+      return out;
+    }
+    if(state.mode === 'acv'){
+      out.main = '0.00'; out.unit = 'V~'; out.value = 0; out.valid = true; out.cls = 'warn';
+      out.msg = '0.00 V AC. This is a DC vehicle system, so AC volts is the wrong function. Select DC volts.';
+      out.warns.push({cls:'warn', t:'Wrong function: AC volts on a DC circuit reads almost nothing.'});
+      return out;
+    }
+    const V = solveNet(netWithMeter(), 'gnd', null, true);
+    const v = V[rn] - V[bn];
+    out.value = v; out.valid = true;
+    out.main = (v < -0.005 ? '-' : '') + Math.abs(v).toFixed(2);
+    out.unit = 'V'; out.flags = 'DC AUTO';
+    out.note = TP[rp.tp].code + ' (red) to ' + TP[bp.tp].code + ' (black)';
+    out.msg = 'Measuring ' + out.main + ' V DC between ' + TP[rp.tp].code + ' and ' + TP[bp.tp].code + '.';
+    if(v < -0.05) out.warns.push({cls:'warn', t:'Negative reading: the probes are reversed for this measurement (red is on the more negative point). The value itself is still valid.'});
+    return out;
+  }
+
+  /* ---------------- OHMS / CONTINUITY ---------------- */
+  if(state.mode === 'ohm' || state.mode === 'cont'){
+    out.mode = state.mode === 'ohm' ? 'RESISTANCE' : 'CONTINUITY';
+    if(state.redJack !== 'v'){
+      out.main = '- - - -'; out.unit = 'Ω'; out.cls = 'bad';
+      out.msg = 'The red lead must be in the VΩ jack for resistance and continuity.';
+      out.warns.push({cls:'bad', t:'Wrong jack: move the red lead to the VΩ jack.'});
+      return out;
+    }
+    if(!bothOn){
+      out.main = 'OL'; out.unit = ''; out.cls = 'warn';
+      out.msg = 'OL (over limit / open loop). Place both probes on the two ends of the wire or component you are testing.';
+      return out;   /* beep stays false, so the buzzer is silenced */
+    }
+    const Vlive = solveNet(buildNet([{t:'R', a:rn, b:bn, R:RVOLT}]), 'gnd', null, true);
+    const vPresent = Math.abs(Vlive[rn] - Vlive[bn]);
+    if(vPresent > 0.5){
+      out.main = 'V!'; out.unit = ''; out.cls = 'bad';
+      out.msg = 'The meter detects ' + vPresent.toFixed(2) + ' V at the probes. Never measure resistance on a live circuit: the reading is meaningless and the meter can be damaged.';
+      out.warns.push({cls:'bad', t:'Isolate first: switch the load off and disconnect the battery isolator before using ohms or continuity.'});
+      return out;
+    }
+    const els = buildNet().map(e => e.t === 'B' ? {t:'R', a:e.a, b:e.b, R:e.r} : e);
+    const V = solveNet(els, bn, [{node:rn, amps:1}], false);
+    const R = V[rn];
+    out.value = R; out.valid = true;
+    out.note = TP[rp.tp].code + ' to ' + TP[bp.tp].code;
+    if(R > 2e6){
+      out.main = 'OL'; out.unit = ''; out.value = Infinity; out.cls = 'warn';
+      out.msg = 'OL, no continuity. The path between ' + TP[rp.tp].code + ' and ' + TP[bp.tp].code + ' is open circuit.';
+    } else if(R >= 1000){
+      out.main = (R/1000).toFixed(2); out.unit = 'kΩ';
+      out.msg = 'Measuring ' + out.main + ' kΩ.';
+    } else {
+      out.main = R.toFixed(2); out.unit = 'Ω';
+      out.msg = 'Measuring ' + out.main + ' Ω between ' + TP[rp.tp].code + ' and ' + TP[bp.tp].code + '.';
+    }
+    if(state.mode === 'cont'){
+      out.beep = (R < 25);
+      out.flags = out.beep ? 'BEEP' : '';
+      if(out.beep) out.msg += ' Continuity confirmed, the meter beeps.';
+    }
+    if(R < 2e6){
+      const lamp1 = (rp.tp === 'cb2b' && bp.tp === 'tp_l1b') || (rp.tp === 'tp_l1b' && bp.tp === 'cb2b');
+      const lamp2 = (rp.tp === 'cb3b' && bp.tp === 'tp_l2b') || (rp.tp === 'tp_l2b' && bp.tp === 'cb3b');
+      if((lamp1 && state.c2) || (lamp2 && state.c3))
+        out.warns.push({cls:'warn', t:'The joint is still connected, so you are also reading the other lamp in parallel (about 1.2 Ω instead of 2.4 Ω). Disconnect the component before measuring its resistance.'});
+    }
+    return out;
+  }
+
+  /* ---------------- AMPS ---------------- */
+  if(state.mode === 'adc'){
+    out.mode = 'DC CURRENT';
+    if(state.redJack !== 'a'){
+      out.main = '- - - -'; out.unit = 'A'; out.cls = 'bad';
+      out.msg = 'To measure current the red lead must be moved to the 10 A jack.';
+      out.warns.push({cls:'bad', t:'Wrong jack: the red lead must be in the 10 A jack to measure current.'});
+      return out;
+    }
+    if(state.meterFuse === 'blown'){
+      out.main = 'FUSE'; out.unit = ''; out.cls = 'bad';
+      out.msg = 'The internal 10 A fuse in the meter is blown. Replace it before measuring current again.';
+      out.warns.push({cls:'bad', t:'Meter fuse blown. Use "Replace meter fuse", and remember an ammeter goes in series, never across a live load.'});
+      return out;
+    }
+    if(!bothOn){
+      out.main = '0.00'; out.unit = 'A'; out.cls = 'warn';
+      out.msg = '0.00 A. The meter must be inserted in series: open an in-line joint (C1, C2 or C3) and bridge the gap with the two probes.';
+      return out;
+    }
+    const j = jointFromProbes();
+    const V = solveNet(netWithMeter(), 'gnd', null, true);
+    const i = (V[rn] - V[bn]) / RSHUNT;
+    if(Math.abs(i) > 10.5 && !(j && !state[j.key])){
+      state.meterFuse = 'blown';
+      const f1i = fuseBlown() ? 0 : Math.abs((V.fin - V.fout)/0.02);
+      if(f1i > F1_RATING) state.f1 = 'blown';
+      out.main = 'FUSE'; out.unit = ''; out.cls = 'bad';
+      out.msg = 'Bang. The ammeter was connected across a live circuit: ' + Math.abs(i).toFixed(0) +
+                ' A tried to flow through the meter and its 10 A fuse has blown' +
+                (state.f1 === 'blown' ? ', and F1 in the vehicle has blown as well' : '') + '.';
+      out.warns.push({cls:'bad', t:'An ammeter is almost a short circuit. It must only ever be placed in series, in a deliberately opened part of the circuit.'});
+      return out;
+    }
+    out.value = i; out.valid = true;
+    out.main = (i < -0.005 ? '-' : '') + Math.abs(i).toFixed(2);
+    out.unit = 'A'; out.flags = 'DC AUTO';
+    out.note = TP[rp.tp].code + ' to ' + TP[bp.tp].code;
+    if(!j){
+      out.cls = 'warn';
+      out.msg = 'Reading ' + out.main + ' A, but the probes are not bridging an in-line joint. To measure a circuit current, open C1, C2 or C3 and place one probe on each half.';
+      out.warns.push({cls:'warn', t:'The ammeter is not in series with the load, so this reading cannot be trusted.'});
+      return out;
+    }
+    if(state[j.key]){
+      out.cls = 'warn';
+      out.msg = 'Reading ' + out.main + ' A at joint ' + j.name + ', but the joint is still JOINED, so most of the current bypasses the meter through the connector and the reading is far too low.';
+      out.warns.push({cls:'warn', t:'Disconnect the joint so that all of the current has to flow through the meter.'});
+      return out;
+    }
+    out.msg = 'Reading ' + out.main + ' A DC, in series at ' + j.name + '. The meter is now carrying the circuit current, so the lamps it feeds light up again.';
+    if(i < -0.02) out.warns.push({cls:'warn', t:'Negative sign: swap the probes for a positive reading (red on the supply side, black on the load side).'});
+    return out;
+  }
+  return out;
+}
+
+/* continuity buzzer, idempotent so it can be called on every refresh */
+let audioCtx = null, osc = null, gainNode = null;
+function setBuzz(on){
+  try{
+    if(on){
+      if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if(audioCtx.state === 'suspended') audioCtx.resume();
+      if(!osc){
+        osc = audioCtx.createOscillator(); gainNode = audioCtx.createGain();
+        osc.type = 'square'; osc.frequency.value = 2100; gainNode.gain.value = 0.03;
+        osc.connect(gainNode); gainNode.connect(audioCtx.destination); osc.start();
+      }
+    } else if(osc){
+      osc.stop(); osc.disconnect(); osc = null; gainNode = null;
+    }
+  }catch(e){ /* audio unavailable */ }
+}
+
+/* =========================================================================
+   3 | RENDERING
+   ========================================================================= */
+const svg = document.getElementById('scene');
+const DIAL = {cx:1105, cy:410, r:88};
+const MODES = [
+  {id:'off',  ang:   0, label:'OFF',   w:32},
+  {id:'dcv',  ang:  50, label:'V DC',  w:40},
+  {id:'acv',  ang: 100, label:'V AC',  w:40},
+  {id:'adc',  ang: 150, label:'A DC',  w:40},
+  {id:'ohm',  ang: -50, label:'\u03A9', w:18},
+  {id:'cont', ang:-100, label:'\u00B7)))', w:32}
+];
+
+function svgEl(tag, attrs, text){
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(text != null) e.textContent = text;
+  return e;
+}
+
+/* --- dial labels, ticks and selection chips --- */
+(function buildDial(){
+  const g = document.getElementById('dialLabels');
+  MODES.forEach(m => {
+    const a = m.ang * Math.PI / 180;
+    const x = DIAL.cx + DIAL.r * Math.sin(a);
+    const y = DIAL.cy - DIAL.r * Math.cos(a);
+    g.appendChild(svgEl('line', {
+      x1: DIAL.cx + 100*Math.sin(a), y1: DIAL.cy - 100*Math.cos(a),
+      x2: DIAL.cx + 108*Math.sin(a), y2: DIAL.cy - 108*Math.cos(a),
+      stroke:'#00095B', 'stroke-width':3, 'stroke-linecap':'round'
+    }));
+    g.appendChild(svgEl('rect', {
+      id:'chipMode_'+m.id, x:x-(m.w/2)-7, y:y-11, width:m.w+14, height:22, rx:7,
+      fill:'#066FEF', opacity:0
+    }));
+    const t = svgEl('text', {
+      id:'lblMode_'+m.id, x:x, y:y+5, 'text-anchor':'middle',
+      'font-size':14, 'font-weight':700, fill:'#00095B', style:'cursor:pointer'
+    }, m.label);
+    const hot = svgEl('circle', {cx:x, cy:y, r:22, fill:'transparent', style:'cursor:pointer'});
+    hot.appendChild(svgEl('title', {}, 'Select ' + m.label));
+    const pick = () => { state.mode = m.id; state.hold = false; update(); };
+    t.addEventListener('click', pick);
+    hot.addEventListener('click', pick);
+    g.appendChild(t); g.appendChild(hot);
+  });
+})();
+
+/* --- test points --- */
+(function buildTPs(){
+  const layer = document.getElementById('tpLayer');
+  TESTPOINTS.forEach(tp => {
+    const grp = svgEl('g', {style:'cursor:pointer'});
+    grp.appendChild(svgEl('title', {}, tp.code + ' - ' + tp.desc));
+    grp.appendChild(svgEl('circle', {cx:tp.x, cy:tp.y, r:18, fill:'transparent'}));
+    grp.appendChild(svgEl('circle', {id:'ring_'+tp.id, cx:tp.x, cy:tp.y, r:13, fill:'none',
+                                     stroke:'#066FEF', 'stroke-width':3.5, opacity:0}));
+    grp.appendChild(svgEl('circle', {id:'dot_'+tp.id, cx:tp.x, cy:tp.y, r:7,
+                                     fill:'#00142E', stroke:'#066FEF', 'stroke-width':3}));
+    grp.appendChild(svgEl('text', {x:tp.lx, y:tp.ly, 'text-anchor':tp.anchor, 'font-size':12,
+                                   'font-weight':700, fill:'#66A9F7', stroke:'#00142E',
+                                   'stroke-width':4, style:'paint-order:stroke'}, tp.code));
+    grp.addEventListener('click', () => {
+      if(state.selected){ placeProbe(state.selected, tp.id); state.selected = null; update(); }
+    });
+    layer.appendChild(grp);
+  });
+})();
+
+/* --- legend --- */
+(function buildLegend(){
+  const l = document.getElementById('legend');
+  TESTPOINTS.forEach(tp => {
+    l.appendChild(Object.assign(document.createElement('b'), {textContent:tp.code}));
+    l.appendChild(Object.assign(document.createElement('span'), {textContent:tp.desc}));
+  });
+})();
+
+function placeProbe(which, tpId){
+  const p = state.probes[which], t = TP[tpId];
+  p.tp = tpId; p.x = t.x; p.y = t.y;
+  const other = state.probes[which === 'red' ? 'black' : 'red'];
+  if(other.tp === tpId){ p.x += 7; p.y += 7; }
+}
+
+/* cable leaves the rear of the handle and hangs down to the jack */
+function leadPath(jack, p){
+  const rx = p.x + REAR_DX, ry = p.y + REAR_DY;
+  const c1x = rx + 55, c1y = Math.min(ry + 105, 815);
+  const c2x = jack.x - 105, c2y = jack.y + 115;
+  return 'M' + rx.toFixed(1) + ',' + ry.toFixed(1) +
+         ' C' + c1x.toFixed(1) + ',' + c1y.toFixed(1) +
+         ' ' + c2x.toFixed(1) + ',' + c2y.toFixed(1) +
+         ' ' + jack.x + ',' + jack.y;
+}
+
+function update(){
+  const r = reading();     /* first: this can blow a fuse */
+  const t = truth();       /* then: reflects the meter and any blown fuse */
+
+  /* probes and leads */
+  const jackRed = state.redJack === 'a' ? {x:1000, y:630} : {x:1210, y:630};
+  const jackBlk = {x:1105, y:630};
+  const pr = state.probes.red, pb = state.probes.black;
+  document.getElementById('probeRed').setAttribute('transform', 'translate(' + pr.x + ',' + pr.y + ')');
+  document.getElementById('probeBlack').setAttribute('transform', 'translate(' + pb.x + ',' + pb.y + ')');
+  const dRed = leadPath(jackRed, pr), dBlk = leadPath(jackBlk, pb);
+  document.getElementById('leadRed').setAttribute('d', dRed);
+  document.getElementById('leadRedHi').setAttribute('d', dRed);
+  document.getElementById('leadBlack').setAttribute('d', dBlk);
+  document.getElementById('leadBlackHi').setAttribute('d', dBlk);
+  document.getElementById('plugA').setAttribute('opacity', state.redJack === 'a' ? 1 : 0);
+  document.getElementById('plugV').setAttribute('opacity', state.redJack === 'v' ? 1 : 0);
+  ['red','black'].forEach(k => {
+    const el = document.getElementById(k === 'red' ? 'probeRed' : 'probeBlack');
+    el.style.filter = (state.selected === k) ? 'drop-shadow(0 0 7px #066FEF)' : 'none';
+  });
+
+  /* test point rings */
+  TESTPOINTS.forEach(tp => {
+    const used = pr.tp === tp.id ? 'red' : (pb.tp === tp.id ? 'black' : null);
+    const ring = document.getElementById('ring_'+tp.id);
+    ring.setAttribute('opacity', used ? 1 : 0);
+    ring.setAttribute('stroke', used === 'red' ? '#FF5A5A' : (used === 'black' ? '#FFFFFF' : '#066FEF'));
+  });
+
+  /* switches and joints */
+  document.getElementById('isoBlade').setAttribute('transform', state.iso ? '' : 'rotate(-32,140,160)');
+  document.getElementById('s1Blade').setAttribute('transform', state.s1 ? '' : 'rotate(-32,548,160)');
+  [['c1','cb1link','chip1r','chip1t','C1'],
+   ['c2','cb2link','chip2r','chip2t','C2'],
+   ['c3','cb3link','chip3r','chip3t','C3']].forEach(([key, link, rectId, txtId, name]) => {
+    const joined = state[key];
+    const ln = document.getElementById(link);
+    ln.setAttribute('opacity', joined ? 1 : 0.18);
+    ln.setAttribute('stroke-dasharray', joined ? '' : '3 6');
+    document.getElementById(txtId).textContent = name + ' \u00B7 ' + (joined ? 'JOINED' : 'OPEN');
+    document.getElementById(txtId).setAttribute('fill', joined ? '#A9C0DE' : '#FFB020');
+    document.getElementById(rectId).setAttribute('stroke', joined ? '#066FEF' : '#FFB020');
+  });
+
+  /* lamps */
+  const b1 = Math.min(1, Math.max(0, t.vLamp1 / 11.66));
+  const b2 = Math.min(1, Math.max(0, t.vLamp2 / 11.66));
+  document.getElementById('l1glow').setAttribute('opacity', Math.pow(b1, 2.2).toFixed(3));
+  document.getElementById('l2glow').setAttribute('opacity', Math.pow(b2, 2.2).toFixed(3));
+  document.getElementById('l1fil').setAttribute('stroke', b1 > 0.15 ? '#FFF3B0' : '#C6DAF2');
+  document.getElementById('l2fil').setAttribute('stroke', b2 > 0.15 ? '#FFF3B0' : '#C6DAF2');
+
+  /* fault visuals only when revealed */
+  const sf = state.reveal;
+  document.getElementById('fuseFil').setAttribute('opacity', (sf && fuseBlown()) ? 0.2 : 1);
+  document.getElementById('fuseBody').setAttribute('stroke', (sf && fuseBlown()) ? '#FF5A5A' : '#C6DAF2');
+  document.getElementById('strapWire').setAttribute('stroke', (sf && state.fault === 'bad_ground') ? '#FFB020' : '#C6DAF2');
+  document.getElementById('l1fil').setAttribute('opacity', (sf && state.fault === 'l1_open') ? 0.2 : 1);
+  document.getElementById('s1Blade').setAttribute('stroke', (sf && state.fault === 'switch_hr') ? '#FFB020' : '#FFFFFF');
+
+  /* dial */
+  const m = MODES.find(x => x.id === state.mode);
+  document.getElementById('dialPointerG').setAttribute('transform',
+    'rotate(' + m.ang + ',' + DIAL.cx + ',' + DIAL.cy + ')');
+  MODES.forEach(x => {
+    const on = x.id === state.mode;
+    document.getElementById('chipMode_'+x.id).setAttribute('opacity', on ? 1 : 0);
+    document.getElementById('lblMode_'+x.id).setAttribute('fill', on ? '#FFFFFF' : '#00095B');
+  });
+
+  /* LCD (with HOLD) */
+  let lcd = {mode:r.mode, main:r.main, unit:r.unit, flags:r.flags, note:r.note};
+  if(state.hold && state.heldLCD){
+    const h = state.heldLCD;                    /* copy, never mutate the snapshot */
+    lcd = {mode:h.mode, main:h.main, unit:h.unit, note:h.note,
+           flags:(h.flags ? h.flags + ' ' : '') + 'HOLD'};
+  }
+  document.getElementById('lcdMode').textContent  = lcd.mode;
+  document.getElementById('lcdMain').textContent  = lcd.main;
+  document.getElementById('lcdUnit').textContent  = lcd.unit;
+  document.getElementById('lcdFlags').textContent = lcd.flags;
+  document.getElementById('lcdNote').textContent  = lcd.note;
+  document.getElementById('holdRect').setAttribute('fill', state.hold ? '#00095B' : '#066FEF');
+
+  /* live set-up checklist and plain-English status */
+  renderChecklist();
+  renderStatus();
+
+  /* feedback */
+  const ro = document.getElementById('readout');
+  ro.className = 'msg ' + r.cls;
+  ro.textContent = r.msg;
+
+  const wb = document.getElementById('warnBox'); wb.innerHTML = '';
+  const warns = r.warns.slice();
+  if(state.f1 === 'blown' && state.fault !== 'fuse_blown')
+    warns.push({cls:'bad', t:'Vehicle fuse F1 has blown because of the overload. Fit a new F1 fuse to continue.'});
+  if(!state.iso && state.mode === 'dcv')
+    warns.push({cls:'info', t:'The battery isolator is disconnected, so the circuit is dead and most voltage readings will be 0 V.'});
+  if(state.mode === 'adc' && state.redJack === 'v')
+    warns.push({cls:'warn', t:'Remember to change both the dial and the lead position when moving between volts and amps.'});
+  if(state.hold)
+    warns.push({cls:'info', t:'HOLD is active: the display is frozen. Press HOLD again to return to live readings.'});
+  warns.forEach(w => {
+    const d = document.createElement('div'); d.className = 'msg ' + w.cls; d.textContent = w.t; wb.appendChild(d);
+  });
+
+  /* control buttons */
+  setBtn('btnIso', 'Battery isolator: ' + (state.iso ? 'CONNECTED' : 'DISCONNECTED'), state.iso);
+  setBtn('btnS1',  'S1 lamp switch: ' + (state.s1 ? 'ON' : 'OFF'), state.s1);
+  setBtn('btnC1',  'C1 joint: ' + (state.c1 ? 'JOINED' : 'OPEN'), !state.c1);
+  setBtn('btnC2',  'C2 joint: ' + (state.c2 ? 'JOINED' : 'OPEN'), !state.c2);
+  setBtn('btnC3',  'C3 joint: ' + (state.c3 ? 'JOINED' : 'OPEN'), !state.c3);
+  setBtn('btnJackV', 'Red lead \u2192 V\u03A9 jack', state.redJack === 'v');
+  setBtn('btnJackA', 'Red lead \u2192 10 A jack', state.redJack === 'a');
+  setBtn('btnReveal', state.reveal ? 'Hide live values' : 'Reveal live values', state.reveal);
+
+  /* instructor panel */
+  const tb = document.getElementById('truthBox');
+  if(state.reveal){
+    const names = {none:'No fault (healthy)', fuse_blown:'F1 fuse open circuit',
+                   switch_hr:'S1 high resistance (4 \u03A9)', l1_open:'L1 open filament',
+                   bad_ground:'G101 earth 3 \u03A9'};
+    tb.innerHTML = '<table class="truth">' +
+      row('Active fault', names[state.fault] + (state.f1 === 'blown' && state.fault !== 'fuse_blown' ? ' + F1 blown by overload' : '')) +
+      row('Battery terminal volts', t.vBattTerm.toFixed(2) + ' V') +
+      row('Total circuit current', t.iTotal.toFixed(2) + ' A') +
+      row('L1 current / volts', t.i1.toFixed(2) + ' A / ' + t.vLamp1.toFixed(2) + ' V') +
+      row('L2 current / volts', t.i2.toFixed(2) + ' A / ' + t.vLamp2.toFixed(2) + ' V') +
+      row('Volt drop across F1', t.vFuse.toFixed(3) + ' V') +
+      row('Volt drop across S1', t.vSwitch.toFixed(3) + ' V') +
+      row('Earth-side volt drop', t.vEarth.toFixed(3) + ' V') +
+      '</table>';
+  } else {
+    tb.innerHTML = '<div class="small">Live values are hidden, diagnose with the meter.' +
+      (state.faultHidden ? ' <span class="pill hidden">hidden fault active</span>' : '') + '</div>';
+  }
+  const fs = document.getElementById('faultSel');
+  fs.disabled = state.faultHidden;
+  if(!state.faultHidden) fs.value = state.fault;
+
+  renderTask();
+  setBuzz(!!r.beep);   /* buzzer stops the moment a probe leaves a test point */
+}
+function row(a, b){ return '<tr><td>' + a + '</td><td>' + b + '</td></tr>'; }
+function setBtn(id, label, on){
+  const b = document.getElementById(id);
+  b.textContent = label;
+  b.classList.toggle('on', !!on);
+}
+
+/* =========================================================================
+   4 | INTERACTION
+   ========================================================================= */
+function toSvg(evt){
+  const pt = svg.createSVGPoint();
+  pt.x = evt.clientX; pt.y = evt.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+function nearestTP(x, y, max){
+  let best = null, bd = 1e9;
+  TESTPOINTS.forEach(tp => {
+    const d = Math.hypot(tp.x - x, tp.y - y);
+    if(d < bd){ bd = d; best = tp; }
+  });
+  return bd <= max ? best : null;
+}
+['red','black'].forEach(which => {
+  const el = document.getElementById(which === 'red' ? 'probeRed' : 'probeBlack');
+  let dragging = false, moved = false;
+  el.addEventListener('pointerdown', e => {
+    dragging = true; moved = false;
+    el.setPointerCapture(e.pointerId);
+    el.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  el.addEventListener('pointermove', e => {
+    if(!dragging) return;
+    moved = true;
+    const p = toSvg(e);
+    const pr = state.probes[which];
+    pr.x = Math.max(20, Math.min(1280, p.x));
+    pr.y = Math.max(20, Math.min(690, p.y));
+    pr.tp = null;
+    const near = nearestTP(pr.x, pr.y, 32);
+    TESTPOINTS.forEach(tp => {
+      document.getElementById('dot_'+tp.id).setAttribute('r', (near && near.id === tp.id) ? 9.5 : 7);
+    });
+    update();
+  });
+  el.addEventListener('pointerup', e => {
+    if(!dragging) return;
+    dragging = false;
+    el.style.cursor = 'grab';
+    TESTPOINTS.forEach(tp => document.getElementById('dot_'+tp.id).setAttribute('r', 7));
+    if(!moved){
+      state.selected = (state.selected === which) ? null : which;
+      update(); return;
+    }
+    const pr = state.probes[which];
+    const near = nearestTP(pr.x, pr.y, 32);
+    if(near) placeProbe(which, near.id); else pr.tp = null;
+    state.selected = null;
+    update();
+  });
+});
+
+/* rotary knob drag */
+(function(){
+  const knob = document.getElementById('knob');
+  let dragging = false;
+  const setFromAngle = (x, y) => {
+    const ang = Math.atan2(x - DIAL.cx, DIAL.cy - y) * 180 / Math.PI;
+    let best = MODES[0], bd = 1e9;
+    MODES.forEach(m => {
+      const d = Math.abs(((ang - m.ang + 540) % 360) - 180);
+      if(d < bd){ bd = d; best = m; }
+    });
+    if(best.id !== state.mode){ state.mode = best.id; state.hold = false; update(); }
+  };
+  knob.addEventListener('pointerdown', e => { dragging = true; knob.setPointerCapture(e.pointerId); e.preventDefault(); });
+  knob.addEventListener('pointermove', e => { if(!dragging) return; const p = toSvg(e); setFromAngle(p.x, p.y); });
+  knob.addEventListener('pointerup', () => { dragging = false; });
+})();
+
+/* clickable circuit items */
+const click = (id, fn) => document.getElementById(id).addEventListener('click', fn);
+click('isoHot', () => { state.iso = !state.iso; update(); });
+click('s1Hot',  () => { state.s1  = !state.s1;  update(); });
+click('cb1hot', () => { state.c1  = !state.c1;  update(); });
+click('cb2hot', () => { state.c2  = !state.c2;  update(); });
+click('cb3hot', () => { state.c3  = !state.c3;  update(); });
+click('chip1g', () => { state.c1  = !state.c1;  update(); });
+click('chip2g', () => { state.c2  = !state.c2;  update(); });
+click('chip3g', () => { state.c3  = !state.c3;  update(); });
+click('jackA',  () => { state.redJack = 'a'; update(); });
+click('jackV',  () => { state.redJack = 'v'; update(); });
+click('holdBtn', () => {
+  if(!state.hold){
+    const r = reading();
+    state.heldLCD = {mode:r.mode, main:r.main, unit:r.unit, flags:r.flags, note:r.note};
+    state.hold = true;
+  } else { state.hold = false; state.heldLCD = null; }
+  update();
+});
+
+/* side panel */
+click('btnIso', () => { state.iso = !state.iso; update(); });
+click('btnS1',  () => { state.s1  = !state.s1;  update(); });
+click('btnC1',  () => { state.c1  = !state.c1;  update(); });
+click('btnC2',  () => { state.c2  = !state.c2;  update(); });
+click('btnC3',  () => { state.c3  = !state.c3;  update(); });
+click('btnJackV', () => { state.redJack = 'v'; update(); });
+click('btnJackA', () => { state.redJack = 'a'; update(); });
+click('btnMeterFuse', () => { state.meterFuse = 'ok'; update(); });
+click('btnCircFuse',  () => { state.f1 = 'ok'; update(); });
+click('btnPark', () => {
+  state.probes.red   = {x:250, y:660, tp:null};
+  state.probes.black = {x:355, y:660, tp:null};
+  state.selected = null;
+  update();
+});
+click('btnReveal', () => { state.reveal = !state.reveal; if(state.reveal) state.faultHidden = false; update(); });
+click('btnRandom', () => {
+  const opts = ['none','fuse_blown','switch_hr','l1_open','bad_ground'];
+  state.fault = opts[Math.floor(Math.random() * opts.length)];
+  state.f1 = 'ok'; state.faultHidden = true; state.reveal = false;
+  document.getElementById('diagFeedback').innerHTML =
+    '<div class="msg info">A hidden fault has been set (it may also be a healthy circuit). Switch the lamps on, observe the symptom, then use volt-drop testing to find it.</div>';
+  update();
+});
+document.getElementById('faultSel').addEventListener('change', e => {
+  state.fault = e.target.value; state.f1 = 'ok'; state.faultHidden = false; update();
+});
+click('btnDiag', () => {
+  const guess = document.getElementById('diagSel').value;
+  const fb = document.getElementById('diagFeedback');
+  if(!guess){ fb.innerHTML = '<div class="msg warn">Choose a diagnosis from the list first.</div>'; return; }
+  const names = {none:'a healthy circuit', fuse_blown:'F1 fuse open circuit',
+                 switch_hr:'high resistance in S1', l1_open:'L1 open filament',
+                 bad_ground:'high resistance earth at G101'};
+  if(guess === state.fault){
+    fb.innerHTML = '<div class="msg ok">Correct, the fault is ' + names[state.fault] +
+      '. Now prove it: the volt drop across a faulty component is high, and the volt drop across a good one is low.</div>';
+    state.faultHidden = false;
+  } else {
+    fb.innerHTML = '<div class="msg bad">Not quite. Re-test methodically: 1 battery volts, 2 volts available at the load, ' +
+      '3 volt drop on the supply side (B+ to the lamp feed), 4 volt drop on the earth side (lamp earth to B-). ' +
+      'The biggest drop is where the fault is.</div>';
+  }
+  update();
+});
+
+/* =========================================================================
+   5 | GUIDED TASKS
+   ========================================================================= */
+const okMsg = t => ({ok:true, msg:t});
+const noMsg = t => ({ok:false, msg:t});
+function needMode(m, label){ return state.mode === m ? null : noMsg('The dial is not set to ' + label + '.'); }
+function probesAre(red, black){ return state.probes.red.tp === red && state.probes.black.tp === black; }
+function probesEither(a, b){
+  const r = state.probes.red.tp, k = state.probes.black.tp;
+  return (r === a && k === b) || (r === b && k === a);
+}
+function judgeDrop(v, label){
+  const a = Math.abs(v);
+  if(a <= 0.3) return 'PASS: ' + a.toFixed(3) + ' V is an acceptable volt drop for ' + label +
+    ' (workshop rule of thumb: connections and switches under 0.3 V, cables under 0.5 V).';
+  if(a <= 0.6) return 'BORDERLINE: ' + a.toFixed(3) + ' V. Inspect ' + label + ' for corrosion or a loose terminal.';
+  return 'FAIL: ' + a.toFixed(2) + ' V is an excessive volt drop. ' + label +
+    ' has unwanted resistance and is the faulty item.';
+}
+
+const TASKS = [
+{ title:'1 \u00B7 Battery open-circuit voltage',
+  brief:'Switch S1 OFF. Set the dial to V DC with the red lead in the V\u03A9 jack. Place the RED probe on B+ and the BLACK probe on B-. Expect about 12.6 V.',
+  hint:'A voltmeter is always connected in parallel, directly across the two points being compared. Red goes to the higher potential, black to the reference.',
+  check(){
+    const e = needMode('dcv','V DC'); if(e) return e;
+    if(state.redJack !== 'v') return noMsg('Move the red lead into the V\u03A9 jack.');
+    if(state.s1) return noMsg('Switch S1 OFF first: you want the open-circuit (no load) voltage of the battery.');
+    if(probesAre('tp_bneg','tp_bpos')) return noMsg('Probes reversed. Red on B+, black on B-, otherwise you read -12.6 V.');
+    if(!probesAre('tp_bpos','tp_bneg')) return noMsg('Red probe on B+ and black probe on B-.');
+    return okMsg('Correct: ' + reading().value.toFixed(2) + ' V. A healthy 12 V battery at rest reads 12.4 to 12.7 V; below 12.2 V it is discharged.');
+  }},
+{ title:'2 \u00B7 Voltage available at the lamp',
+  brief:'Reconnect everything (C1, C2 and C3 joined, isolator connected) and switch S1 ON. With V DC selected, put the RED probe on C2b (the L1 feed terminal) and the BLACK probe on B- or CH.',
+  hint:'This is a "voltage available at the load" test. With the load switched on you should see battery volts minus the small drops in the feed and earth, roughly 11.5 to 12 V on a healthy circuit.',
+  check(){
+    const e = needMode('dcv','V DC'); if(e) return e;
+    if(state.redJack !== 'v') return noMsg('Red lead into the V\u03A9 jack.');
+    if(!state.iso || !state.c1 || !state.c2 || !state.c3) return noMsg('Reconnect the isolator and all three joints so the circuit is complete.');
+    if(!state.s1) return noMsg('Switch S1 ON: voltage at a load must be measured with the circuit loaded.');
+    if(state.probes.red.tp !== 'cb2b') return noMsg('The RED probe belongs on C2b, the feed terminal of lamp L1.');
+    if(!['tp_bneg','tp_chassis'].includes(state.probes.black.tp)) return noMsg('The BLACK probe belongs on battery negative (B-) or chassis earth (CH).');
+    const v = reading().value, t = truth();
+    return okMsg('Reading ' + v.toFixed(2) + ' V at the lamp feed. ' + (v > 11.0
+      ? 'PASS: plenty of voltage is reaching the lamp, so the supply side is healthy.'
+      : 'FAIL: too low. ' + (t.vBattTerm - v).toFixed(2) + ' V is being lost in the supply and earth paths, so volt-drop test each section to find where.'));
+  }},
+{ title:'3 \u00B7 Volt drop across fuse F1',
+  brief:'S1 ON, V DC selected. RED probe on F1a (fuse input), BLACK probe on F1b (fuse output). You are measuring the volts lost across the fuse and its holder.',
+  hint:'Volt-drop tests must be done with current flowing. The probes go either side of the component, never to earth.',
+  check(){
+    const e = needMode('dcv','V DC'); if(e) return e;
+    if(state.redJack !== 'v') return noMsg('Red lead into the V\u03A9 jack.');
+    if(!state.s1) return noMsg('S1 must be ON: a volt drop only appears when current is flowing.');
+    if(!probesEither('tp_f_in','tp_f_out')) return noMsg('Place one probe on F1a and the other on F1b (red on the feed side for a positive reading).');
+    return okMsg(judgeDrop(reading().value, 'a fuse and its holder'));
+  }},
+{ title:'4 \u00B7 Volt drop across switch S1',
+  brief:'S1 ON. RED probe on S1a, BLACK probe on S1b. A good switch drops almost nothing; a corroded one drops volts and starves the lamps.',
+  hint:'If this reading is high while the lamps are dim, the switch or its terminals are at fault, not the bulbs.',
+  check(){
+    const e = needMode('dcv','V DC'); if(e) return e;
+    if(state.redJack !== 'v') return noMsg('Red lead into the V\u03A9 jack.');
+    if(!state.s1) return noMsg('Switch S1 ON first.');
+    if(!probesEither('tp_sw_in','tp_sw_out')) return noMsg('One probe on S1a, the other on S1b.');
+    return okMsg(judgeDrop(reading().value, 'a closed switch'));
+  }},
+{ title:'5 \u00B7 Earth-side volt drop',
+  brief:'S1 ON. RED probe on L1g (the earth-side terminal of the lamp), BLACK probe on B-. This tests the whole earth return path, including G101.',
+  hint:'Trainees often forget the earth side. A corroded earth gives exactly the same symptoms as a poor supply: dim lights and slow motors.',
+  check(){
+    const e = needMode('dcv','V DC'); if(e) return e;
+    if(state.redJack !== 'v') return noMsg('Red lead into the V\u03A9 jack.');
+    if(!state.s1) return noMsg('Switch S1 ON.');
+    if(!probesEither('tp_l1b','tp_bneg') && !probesEither('tp_l1b','tp_chassis'))
+      return noMsg('Red on L1g, black on B- (or CH).');
+    return okMsg(judgeDrop(reading().value, 'the earth return path'));
+  }},
+{ title:'6 \u00B7 Total circuit current, ammeter in series at C1',
+  brief:'Turn the dial to A DC and move the RED LEAD to the 10 A jack. Open the C1 joint, then bridge the gap: RED probe on C1a (supply side), BLACK probe on C1b. S1 ON.',
+  hint:'An ammeter has to carry the circuit current, so the circuit must be broken and the meter inserted in series. Watch the lamps: they light up again through the meter, which proves the meter is now part of the circuit.',
+  check(){
+    const e = needMode('adc','A DC'); if(e) return e;
+    if(state.redJack !== 'a') return noMsg('The red lead must be in the 10 A jack.');
+    if(state.meterFuse === 'blown') return noMsg('Replace the meter fuse first.');
+    if(state.c1) return noMsg('The C1 joint is still connected. Disconnect it so all the current must pass through the meter.');
+    if(!state.iso) return noMsg('Reconnect the battery isolator.');
+    if(!state.s1) return noMsg('Switch S1 ON so that current flows.');
+    if(probesAre('cb1b','cb1a')) return noMsg('Probes reversed, you will read a negative current. Red goes on the supply side, C1a.');
+    if(!probesAre('cb1a','cb1b')) return noMsg('Red probe on C1a, black probe on C1b, bridging the open joint.');
+    const i = reading().value;
+    return okMsg('Correct: ' + i.toFixed(2) + ' A flowing, and both lamps are lit through the meter. ' + (i > 8
+      ? 'That matches two healthy 2.4 \u03A9 lamps in parallel (about 9.7 A total, roughly 58 W each) and is well inside the 15 A rating of F1.'
+      : 'That is less than the 9.7 A expected, so either a lamp is not drawing current or unwanted resistance is limiting the circuit.'));
+  }},
+{ title:'7 \u00B7 Branch current through lamp L1',
+  brief:'Still on A DC with the red lead in the 10 A jack: rejoin C1, then open C2 and bridge it. RED on C2a, BLACK on C2b, S1 ON. Notice that L1 lights through the meter while L2 stays lit on its own branch.',
+  hint:'In a parallel circuit each branch carries its own current and the branch currents add up to the total. Expect roughly half of the total.',
+  check(){
+    const e = needMode('adc','A DC'); if(e) return e;
+    if(state.redJack !== 'a') return noMsg('Red lead in the 10 A jack.');
+    if(state.meterFuse === 'blown') return noMsg('Replace the meter fuse first.');
+    if(!state.c1) return noMsg('Rejoin the C1 joint, otherwise no current can reach the lamps at all.');
+    if(state.c2) return noMsg('Open the C2 joint first.');
+    if(!state.s1 || !state.iso) return noMsg('Isolator connected and S1 ON, please.');
+    if(!probesAre('cb2a','cb2b')) return noMsg('Red on C2a (supply side), black on C2b (lamp side).');
+    return okMsg('Correct: ' + Math.abs(reading().value).toFixed(2) +
+      ' A in the L1 branch. Check it with Ohm\u2019s law: I = V / R, so 11.7 V / 2.4 \u03A9 is about 4.9 A, and two such branches give about 9.7 A in total.');
+  }},
+{ title:'8 \u00B7 Resistance of lamp L1, component isolated',
+  brief:'Turn the dial to \u03A9 and put the red lead back in the V\u03A9 jack. Switch S1 OFF, DISCONNECT the battery isolator and OPEN the C2 joint. Then measure across the lamp: RED on C2b, BLACK on L1g.',
+  hint:'Two golden rules for resistance: the circuit must be dead, and the component must be disconnected from parallel paths, otherwise you measure everything else as well.',
+  check(){
+    const e = needMode('ohm','\u03A9 (resistance)'); if(e) return e;
+    if(state.redJack !== 'v') return noMsg('Red lead into the V\u03A9 jack.');
+    if(state.iso) return noMsg('Disconnect the battery isolator: never measure resistance on a live circuit.');
+    if(state.c2) return noMsg('Open the C2 joint so that L1 is isolated from L2, otherwise you read both lamps in parallel, about 1.2 \u03A9.');
+    if(!probesEither('cb2b','tp_l1b')) return noMsg('One probe on C2b, the other on L1g, across the lamp itself.');
+    const R = reading().value;
+    if(R > 1e6) return noMsg('OL, open circuit. If this really is the bulb, the filament has failed.');
+    return okMsg('Correct: ' + R.toFixed(2) + ' \u03A9. ' + (R < 3
+      ? 'A healthy filament. Check it with Ohm\u2019s law: 12 V / 2.4 \u03A9 is about 5 A, and P = V x I is about 58 W.'
+      : 'Higher than the 2.4 \u03A9 expected, so suspect a parallel path or a poor connection in your test set-up.'));
+  }},
+{ title:'9 \u00B7 Continuity of the earth strap G101',
+  brief:'Dial to the continuity position, red lead in the V\u03A9 jack, isolator DISCONNECTED. Probe between G101 and CH. A good strap beeps and reads near 0 \u03A9. Lift one probe and the beep must stop immediately.',
+  hint:'Continuity is a fast resistance test with a buzzer, ideal for proving cables, earths and fuses.',
+  check(){
+    const e = needMode('cont','the continuity position'); if(e) return e;
+    if(state.redJack !== 'v') return noMsg('Red lead into the V\u03A9 jack.');
+    if(state.iso) return noMsg('Disconnect the battery isolator before continuity testing.');
+    if(!probesEither('tp_gbolt','tp_chassis')) return noMsg('One probe on G101, the other on CH.');
+    const R = reading().value;
+    if(R > 1e6) return noMsg('OL, the earth strap is open circuit.');
+    return okMsg((R < 1 ? 'PASS: ' : 'BORDERLINE: ') + R.toFixed(2) +
+      ' \u03A9. Below about 0.5 \u03A9 is a sound earth. Note that even a 3 \u03A9 earth can still beep, which is why a volt-drop test under load is the better test.');
+  }},
+{ title:'10 \u00B7 Diagnostic challenge',
+  brief:'In the Fault box, click "Insert hidden random fault". Switch S1 ON, observe the symptom, then work through the circuit with volt-drop tests and current measurements. Choose your answer in the diagnosis list and confirm it.',
+  hint:'Method: battery volts, then volts at the load, then volt drop on the supply side, then volt drop on the earth side. If half the supply voltage appears across one component, that component is the problem.',
+  check(){
+    return okMsg('Use the Confirm button in the Fault box for this task. Justify your answer with two measurements: one that shows the fault, and one that proves the rest of the circuit is good.');
+  }}
+];
+
+
+/* -------------------------------------------------------------------------
+   Live set-up checklist. Each entry mirrors that task's check() so that when
+   every line is ticked, "Check my measurement" will pass. The trainee can
+   therefore see exactly what is still missing without having to guess.
+   ------------------------------------------------------------------------- */
+const R = {
+  dial : (m,lab) => ['Dial set to ' + lab, () => state.mode === m],
+  jackV: () => ['Red lead in the V\u03A9 jack', () => state.redJack === 'v'],
+  jackA: () => ['Red lead in the 10 A jack', () => state.redJack === 'a'],
+  s1   : on => ['S1 lamp switch ' + (on ? 'ON' : 'OFF'), () => state.s1 === on],
+  iso  : on => [on ? 'Battery isolator connected' : 'Battery isolator DISCONNECTED',
+                () => state.iso === on],
+  joint: (k,on) => [k.toUpperCase() + ' joint ' + (on ? 'joined' : 'OPEN'), () => state[k] === on],
+  red  : code => ['RED probe on ' + code, () => tpCode('red') === code],
+  black: codes => ['BLACK probe on ' + codes.join(' or '), () => codes.includes(tpCode('black'))],
+  pair : (a,b) => ['Probes across ' + a + ' and ' + b + ' (either way round)',
+                   () => [a,b].includes(tpCode('red')) && [a,b].includes(tpCode('black'))
+                         && tpCode('red') !== tpCode('black')],
+  fuse : () => ['Meter fuse intact', () => state.meterFuse === 'ok']
+};
+function tpCode(which){
+  const id = state.probes[which].tp;
+  return id ? TP[id].code : null;
+}
+const REQS = [
+  /* 1 */ [R.dial('dcv','V DC'), R.jackV(), R.s1(false), R.red('B+'), R.black(['B-'])],
+  /* 2 */ [R.dial('dcv','V DC'), R.jackV(), R.iso(true),
+           R.joint('c1',true), R.joint('c2',true), R.joint('c3',true),
+           R.s1(true), R.red('C2b'), R.black(['B-','CH'])],
+  /* 3 */ [R.dial('dcv','V DC'), R.jackV(), R.s1(true), R.pair('F1a','F1b')],
+  /* 4 */ [R.dial('dcv','V DC'), R.jackV(), R.s1(true), R.pair('S1a','S1b')],
+  /* 5 */ [R.dial('dcv','V DC'), R.jackV(), R.s1(true),
+           ['Probes across L1g and B- (or CH)',
+            () => { const r = tpCode('red'), b = tpCode('black');
+                    return (r === 'L1g' && ['B-','CH'].includes(b)) ||
+                           (b === 'L1g' && ['B-','CH'].includes(r)); }]],
+  /* 6 */ [R.dial('adc','A DC'), R.jackA(), R.fuse(), R.iso(true), R.s1(true),
+           R.joint('c1',false), R.red('C1a'), R.black(['C1b'])],
+  /* 7 */ [R.dial('adc','A DC'), R.jackA(), R.fuse(), R.iso(true), R.s1(true),
+           R.joint('c1',true), R.joint('c2',false), R.red('C2a'), R.black(['C2b'])],
+  /* 8 */ [R.dial('ohm','\u03A9 (resistance)'), R.jackV(), R.iso(false),
+           R.joint('c2',false), R.pair('C2b','L1g')],
+  /* 9 */ [R.dial('cont','continuity \u00B7)))'), R.jackV(), R.iso(false), R.pair('G101','CH')],
+  /* 10 */ []
+];
+
+function renderChecklist(){
+  const box = document.getElementById('setupList');
+  const cnt = document.getElementById('setupCount');
+  const rq  = REQS[state.taskIdx] || [];
+  if(!rq.length){
+    box.innerHTML = '<div class="small">No fixed set-up for this task &mdash; you decide which tests to make. ' +
+                    'Work methodically and prove your answer with two measurements.</div>';
+    cnt.textContent = 'free';
+    cnt.className = 'pill';
+    return;
+  }
+  let done = 0, html = '';
+  rq.forEach(([lab, fn]) => {
+    let ok = false; try { ok = !!fn(); } catch(e){ ok = false; }
+    if(ok) done++;
+    html += '<div class="chk' + (ok ? ' on' : '') + '"><span class="tick">' +
+            (ok ? '\u2714' : '\u25CB') + '</span><span>' + lab + '</span></div>';
+  });
+  box.innerHTML = html;
+  cnt.textContent = done + ' of ' + rq.length + ' ready';
+  cnt.className = 'pill' + (done === rq.length ? ' okpill' : '');
+}
+function renderStatus(){
+  const nice = {off:'OFF', dcv:'V DC', acv:'V AC', adc:'A DC',
+                ohm:'\u03A9 ohms', cont:'continuity'};
+  const put = (id, txt, bad) => {
+    const e = document.getElementById(id);
+    e.textContent = txt; e.classList.toggle('off', !!bad);
+  };
+  put('stDial', nice[state.mode], state.mode === 'off');
+  put('stJack', state.redJack === 'a' ? '10 A jack' : 'V\u03A9 jack', false);
+  put('stRed',  tpCode('red')   || 'not connected', !tpCode('red'));
+  put('stBlk',  tpCode('black') || 'not connected', !tpCode('black'));
+  const open = [];
+  if(!state.c1) open.push('C1');
+  if(!state.c2) open.push('C2');
+  if(!state.c3) open.push('C3');
+  let c = (state.iso ? 'live' : 'isolated') + ' \u00B7 S1 ' + (state.s1 ? 'ON' : 'OFF');
+  if(open.length) c += ' \u00B7 ' + open.join('/') + ' open';
+  if(state.f1 === 'blown') c += ' \u00B7 F1 BLOWN';
+  if(state.meterFuse === 'blown') c += ' \u00B7 METER FUSE BLOWN';
+  put('stCirc', c, state.f1 === 'blown' || state.meterFuse === 'blown');
+}
+function renderDots(){
+  const d = document.getElementById('stepDots');
+  let h = '';
+  for(let i = 0; i < TASKS.length; i++)
+    h += '<i class="' + (i === state.taskIdx ? 'on' : (state.done[i] ? 'done' : '')) + '"></i>';
+  d.innerHTML = h;
+}
+
+function renderTask(){
+  const t = TASKS[state.taskIdx];
+  document.getElementById('taskTitle').textContent = t.title;
+  document.getElementById('taskBrief').textContent = t.brief;
+  document.getElementById('taskHint').textContent  = t.hint;
+  document.getElementById('progress').textContent  = 'Step ' + (state.taskIdx + 1) + ' of ' + TASKS.length;
+  renderDots();
+}
+click('btnPrev', () => {
+  state.taskIdx = (state.taskIdx - 1 + TASKS.length) % TASKS.length;
+  document.getElementById('taskFeedback').innerHTML = '';
+  document.getElementById('taskHint').classList.remove('show');
+  update();
+});
+click('btnNext', () => {
+  state.taskIdx = (state.taskIdx + 1) % TASKS.length;
+  document.getElementById('taskFeedback').innerHTML = '';
+  document.getElementById('taskHint').classList.remove('show');
+  update();
+});
+click('btnHint', () => document.getElementById('taskHint').classList.toggle('show'));
+click('btnCheck', () => {
+  const res = TASKS[state.taskIdx].check();
+  if(res.ok) state.done[state.taskIdx] = true;
+  document.getElementById('taskFeedback').innerHTML =
+    '<div class="msg ' + (res.ok ? 'ok' : 'warn') + '">' + res.msg + '</div>';
+  update();
+});
+/* instructor panel: hidden by default so the trainee cannot see the answer */
+click('instrToggle', () => {
+  const p = document.getElementById('instrPanel');
+  const show = p.classList.contains('hide');
+  p.classList.toggle('hide', !show);
+  const b = document.getElementById('instrToggle');
+  b.textContent = show ? 'Hide instructor controls' : 'Show instructor controls';
+  b.classList.toggle('on', show);
+});
+/* put the circuit back to a known good starting state */
+click('btnReset', () => {
+  state.iso = true; state.s1 = false;
+  state.c1 = true; state.c2 = true; state.c3 = true;
+  state.f1 = 'ok'; state.meterFuse = 'ok';
+  state.hold = false; state.heldLCD = null;
+  document.getElementById('taskFeedback').innerHTML = '';
+  update();
+});
+
+/* stop the buzzer if the page loses focus */
+window.addEventListener('blur', () => setBuzz(false));
+
+update();
+</script>
+</body>
+</html>
