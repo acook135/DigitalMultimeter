@@ -132,6 +132,47 @@
     margin-top:10px;padding:10px 12px;border-radius:9px;
     background:rgba(6,111,239,.14);border:1px solid rgba(6,111,239,.5);font-size:13.5px;color:#DCE6F5
   }
+
+  /* ---------- guided tutorial (added) ---------- */
+  .hright{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  button.tourbtn{background:transparent;color:#fff;border:2px solid #fff;border-radius:999px;padding:7px 14px;font-weight:700;font-size:13px;display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+  button.tourbtn:hover{background:var(--blue);border-color:var(--blue)}
+  button.tourbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  button.tourbtn i{font-style:normal;background:#fff;color:#00095B;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+  #tourBlock{position:fixed;inset:0;z-index:1000;display:none}
+  #tourBlock.on{display:block}
+  #tourHole{position:fixed;z-index:1001;border:3px solid #066FEF;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,10,30,.80),0 0 22px 4px rgba(6,111,239,.75);pointer-events:none;transition:all .25s ease}
+  #tourHole.full{border-color:transparent;box-shadow:0 0 0 9999px rgba(0,10,30,.80)}
+  #tourCard{position:fixed;z-index:1002;width:min(390px,calc(100vw - 24px));background:#fff;color:#0F0F0F;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.55);border-top:6px solid #066FEF}
+  #tourCard .in{padding:14px 16px 12px}
+  #tourCard h4{margin:0 0 6px;color:#00095B;font-size:16.5px;line-height:1.3}
+  #tourCard p{margin:0 0 6px;font-size:14px;line-height:1.5;color:#0F0F0F}
+  #tourCard .foot{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap}
+  #tourCard .cnt{font-size:12px;color:#4a5a78;margin-right:auto}
+  #tourCard .tdots{display:flex;gap:4px;margin-top:8px;flex-wrap:wrap}
+  #tourCard .tdots span{width:7px;height:7px;border-radius:50%;background:#dfe3ee;border:1px solid #00095B;display:block}
+  #tourCard .tdots span.on{background:#066FEF;border-color:#066FEF}
+  #tourCard button,#tourWelcome button{font-family:inherit;font-size:13.5px;font-weight:700;border-radius:8px;padding:8px 14px;cursor:pointer;line-height:1.3}
+  #tourCard button.tb,#tourWelcome button.tb{background:#066FEF;border:1px solid #066FEF;color:#fff}
+  #tourCard button.tb:hover,#tourWelcome button.tb:hover{background:#00095B;border-color:#00095B}
+  #tourCard button.tbg,#tourWelcome button.tbg{background:#fff;color:#00095B;border:2px solid #00095B}
+  #tourCard button.tbg:hover,#tourWelcome button.tbg:hover{background:#F0F0F0}
+  #tourCard button.tlink{background:none;border:0;color:#00095B;text-decoration:underline;font-weight:400;font-size:13px;padding:6px}
+  #tourCard button:focus-visible,#tourWelcome button:focus-visible{outline:3px solid #066FEF;outline-offset:2px}
+  #tourArrow{position:absolute;width:0;height:0;border:12px solid transparent;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+  #tourArrow.a-up{top:-18px;border-bottom:18px solid #fff;border-top:0}
+  #tourArrow.a-down{bottom:-18px;border-top:18px solid #fff;border-bottom:0}
+  #tourArrow.a-left{left:-18px;border-right:18px solid #fff;border-left:0}
+  #tourArrow.a-right{right:-18px;border-left:18px solid #fff;border-right:0}
+  #tourWelcome{position:fixed;inset:0;z-index:1100;background:rgba(0,10,30,.86);display:none;align-items:center;justify-content:center;padding:16px}
+  #tourWelcome.on{display:flex}
+  #tourWelcome .box{background:#fff;color:#0F0F0F;border-radius:14px;max-width:540px;width:100%;border-top:8px solid #066FEF;padding:24px;box-shadow:0 12px 40px rgba(0,0,0,.55);max-height:92vh;overflow:auto}
+  #tourWelcome h2{margin:0 0 8px;color:#00095B;font-size:21px}
+  #tourWelcome p{margin:6px 0;font-size:14.5px;line-height:1.55}
+  #tourWelcome ul{margin:6px 0;padding-left:22px;font-size:14.5px;line-height:1.55}
+  #tourWelcome .twnote{font-size:13px;color:#4a5a78}
+  #tourWelcome label.twchk{display:flex;gap:8px;align-items:center;font-size:13.5px;margin-top:12px;color:#0F0F0F}
+  #tourWelcome .twbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 </style>
 </head>
 <body>
@@ -140,8 +181,8 @@
     <h1>Digital Multimeter Workshop</h1>
     <p>12&nbsp;V headlamp circuit &middot; volts, amps, ohms and continuity</p>
   </div>
-  <img class="hlogo" alt="Henry Ford Academy"
-    src="data:image/png;base64,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">
+  <div class="hright"><button class="tourbtn" id="tourLaunch" type="button" aria-label="Start the guided tutorial"><i>?</i> Tutorial</button><img class="hlogo" alt="Henry Ford Academy"
+    src="data:image/png;base64,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"></div>
 </header>
 
 <div class="grid">
@@ -179,7 +220,7 @@
         </defs>
 
         <!-- ============================= CIRCUIT PANEL ============================= -->
-        <rect x="12" y="12" width="902" height="746" rx="16" fill="#00142E" stroke="#066FEF" stroke-opacity=".45" stroke-width="1.5"/>
+        <rect id="circuitPanel" x="12" y="12" width="902" height="746" rx="16" fill="#00142E" stroke="#066FEF" stroke-opacity=".45" stroke-width="1.5"/>
         <text x="34" y="46" fill="#FFFFFF" font-size="17" font-weight="700">Headlamp circuit &#8212; 12 V negative-earth system</text>
         <text x="34" y="68" fill="#A9C0DE" font-size="12">B1 12.6 V &#183; F1 15 A fuse &#183; S1 lamp switch &#183; L1 and L2 lamps 2.4 &#937; in parallel &#183; G101 body earth</text>
 
@@ -203,7 +244,7 @@
         </g>
 
         <!-- chassis -->
-        <rect x="230" y="612" width="600" height="12" rx="4" fill="url(#hatch)" stroke="#2C5590" stroke-width="1.5"/>
+        <rect id="chassis" x="230" y="612" width="600" height="12" rx="4" fill="url(#hatch)" stroke="#2C5590" stroke-width="1.5"/>
         <g stroke="#C6DAF2" stroke-width="4" stroke-linecap="round">
           <line x1="560" y1="624" x2="560" y2="638"/>
           <line x1="542" y1="638" x2="578" y2="638"/>
@@ -213,7 +254,7 @@
         <text x="240" y="648" fill="#A9C0DE" font-size="12">Vehicle body / chassis = battery negative (B&#8722;)</text>
 
         <!-- battery -->
-        <rect x="50" y="250" width="130" height="104" rx="10" fill="#001B3D" stroke="#C6DAF2" stroke-width="2.5"/>
+        <rect id="battery" x="50" y="250" width="130" height="104" rx="10" fill="#001B3D" stroke="#C6DAF2" stroke-width="2.5"/>
         <text x="115" y="286" text-anchor="middle" fill="#FFFFFF" font-size="15" font-weight="700">B1</text>
         <text x="115" y="308" text-anchor="middle" fill="#8FD8FF" font-size="13">12.6 V</text>
         <text x="115" y="330" text-anchor="middle" fill="#A9C0DE" font-size="11">r(int) 0.02 &#937;</text>
@@ -287,7 +328,7 @@
 
         <!-- lamps -->
         <circle id="l1glow" cx="690" cy="420" r="66" fill="url(#glow)" opacity="0" filter="url(#soft)"/>
-        <circle cx="690" cy="420" r="34" fill="#001B3D" stroke="#C6DAF2" stroke-width="3"/>
+        <circle id="lamp1" cx="690" cy="420" r="34" fill="#001B3D" stroke="#C6DAF2" stroke-width="3"/>
         <path id="l1fil" d="M667,397 L713,443 M713,397 L667,443" stroke="#C6DAF2" stroke-width="3"/>
         <text x="640" y="414" text-anchor="end" fill="#FFFFFF" font-size="14" font-weight="700"
               stroke="#00142E" stroke-width="4" style="paint-order:stroke">L1</text>
@@ -295,7 +336,7 @@
               stroke="#00142E" stroke-width="4" style="paint-order:stroke">2.4 &#937;</text>
 
         <circle id="l2glow" cx="830" cy="420" r="66" fill="url(#glow)" opacity="0" filter="url(#soft)"/>
-        <circle cx="830" cy="420" r="34" fill="#001B3D" stroke="#C6DAF2" stroke-width="3"/>
+        <circle id="lamp2" cx="830" cy="420" r="34" fill="#001B3D" stroke="#C6DAF2" stroke-width="3"/>
         <path id="l2fil" d="M807,397 L853,443 M853,397 L807,443" stroke="#C6DAF2" stroke-width="3"/>
         <text x="876" y="414" fill="#FFFFFF" font-size="14" font-weight="700"
               stroke="#00142E" stroke-width="4" style="paint-order:stroke">L2</text>
@@ -303,7 +344,7 @@
               stroke="#00142E" stroke-width="4" style="paint-order:stroke">2.4 &#937;</text>
 
         <!-- earth bolt -->
-        <circle cx="760" cy="570" r="11" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2.5"/>
+        <circle id="earthBolt" cx="760" cy="570" r="11" fill="#0A2A6B" stroke="#C6DAF2" stroke-width="2.5"/>
         <text x="782" y="586" fill="#A9C0DE" font-size="12">earth bolt</text>
         <text x="738" y="600" text-anchor="end" fill="#A9C0DE" font-size="12">earth strap</text>
 
@@ -311,7 +352,7 @@
         <g id="tpLayer"></g>
 
         <!-- probe rest -->
-        <rect x="36" y="648" width="444" height="104" rx="12" fill="#001B3D" stroke="#2C5590" stroke-dasharray="7 6"/>
+        <rect id="probeRest" x="36" y="648" width="444" height="104" rx="12" fill="#001B3D" stroke="#2C5590" stroke-dasharray="7 6"/>
         <text x="52" y="674" fill="#FFFFFF" font-size="12.5" font-weight="700" letter-spacing="1">PROBE REST</text>
         <text x="52" y="694" fill="#A9C0DE" font-size="11.5">Drag a probe tip onto a test point,</text>
         <text x="52" y="712" fill="#A9C0DE" font-size="11.5">or click a probe then click a point.</text>
@@ -324,7 +365,7 @@
           <text x="1105" y="76" text-anchor="middle" fill="#00095B" font-size="12" font-weight="700" letter-spacing="1.2">AUTO-RANGE DMM &#183; CAT III 600 V</text>
 
           <!-- LCD -->
-          <rect x="970" y="88" width="270" height="112" rx="10" fill="url(#lcdGrad)" stroke="#0F0F0F" stroke-width="2.5"/>
+          <rect id="lcdBox" x="970" y="88" width="270" height="112" rx="10" fill="url(#lcdGrad)" stroke="#0F0F0F" stroke-width="2.5"/>
           <text id="lcdMode" x="984" y="112" fill="#16220F" font-size="13" font-weight="700">OFF</text>
           <text id="lcdFlags" x="1226" y="112" text-anchor="end" fill="#16220F" font-size="12" font-weight="700"></text>
           <text id="lcdMain" x="1196" y="168" text-anchor="end" fill="#0F1A0B" font-size="44" font-weight="700"
@@ -340,7 +381,7 @@
           <text x="1240" y="231" text-anchor="end" fill="#00095B" font-size="11" font-weight="700" letter-spacing=".6">AUTO-RANGING</text>
 
           <!-- dial -->
-          <circle cx="1105" cy="410" r="112" fill="#EAEAEA" stroke="#00095B" stroke-width="2"/>
+          <circle id="dialFace" cx="1105" cy="410" r="112" fill="#EAEAEA" stroke="#00095B" stroke-width="2"/>
           <circle cx="1105" cy="410" r="72" fill="#DDDDDD" stroke="#B9B9B9" stroke-width="1"/>
           <g id="dialLabels"></g>
           <g id="knobGroup">
@@ -415,7 +456,7 @@
 
   <aside>
 
-    <div class="card">
+    <div class="card" id="cardStart">
       <h2>Start here &mdash; how to take a measurement</h2>
       <ol class="steps">
         <li><b>Turn the dial</b> to the function you need (click a function name, or drag the knob).</li>
@@ -430,7 +471,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cardTask">
       <h2>Guided task <span id="progress" class="pill"></span></h2>
       <div class="dots" id="stepDots"></div>
       <div class="tasktitle" id="taskTitle"></div>
@@ -451,7 +492,7 @@
       <div id="taskFeedback"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cardReading">
       <h2>Meter reading</h2>
       <div class="stat">
         <b>Dial</b><span id="stDial">&mdash;</span>
@@ -464,7 +505,7 @@
       <div id="warnBox"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cardControls">
       <h2>Circuit &amp; meter controls</h2>
 
       <div class="glab">Circuit</div>
@@ -493,12 +534,12 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cardLegend">
       <h2>Test point legend</h2>
       <div class="legend" id="legend"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="cardInstr">
       <h2>Instructor / assessor</h2>
       <div class="row"><button id="instrToggle">Show instructor controls</button></div>
       <div class="small">Hidden by default so a trainee cannot see the answer. Use
@@ -539,6 +580,18 @@
   </aside>
 </div>
 
+<div id="tourWelcome" role="dialog" aria-modal="true" aria-labelledby="twT"><div class="box">
+<h2 id="twT">Welcome to the Digital Multimeter Workshop</h2>
+<p>This trainer lets you practise using a digital multimeter (DMM) on a 12&nbsp;V headlamp circuit &ndash; safely. You can measure volts, amps, ohms and continuity, find faults with volt-drop tests, and even blow a fuse without any cost.</p>
+<ul><li><b>Learn</b> the meter: the dial, the jacks and the probes</li><li><b>Take real readings</b> from a live model of the circuit</li><li><b>Work through 10 guided tasks</b> with a live set-up checklist</li><li><b>Diagnose a hidden fault</b> like a real technician</li></ul>
+<p>Would you like a guided tutorial? It takes about 5 minutes and highlights every part of the circuit, the meter and each button.</p>
+<p class="twnote">You can start the tutorial again at any time with the <b>? Tutorial</b> button at the top right.</p>
+<label class="twchk"><input type="checkbox" id="twSkip"> Don&rsquo;t show this again on this device</label>
+<div class="twbtns"><button class="tb" id="twYes" type="button">Yes, show me around</button><button class="tbg" id="twNo" type="button">Skip &ndash; let me explore</button></div>
+</div></div>
+<div id="tourBlock" aria-hidden="true"></div>
+<div id="tourHole" style="display:none"></div>
+<div id="tourCard" role="dialog" aria-live="polite" aria-labelledby="tcT" style="display:none"><div id="tourArrow"></div><div class="in"><h4 id="tcT"></h4><div id="tcB"></div><div class="tdots" id="tcD"></div><div class="foot"><span class="cnt" id="tcC"></span><button class="tlink" id="tcSkip" type="button">Skip tour</button><button class="tbg" id="tcBack" type="button">Back</button><button class="tb" id="tcNext" type="button">Next</button></div></div></div>
 <script>
 /* =========================================================================
    1 | CIRCUIT MODEL
@@ -1574,6 +1627,243 @@ click('btnReset', () => {
 window.addEventListener('blur', () => setBuzz(false));
 
 update();
+</script>
+
+<script>
+/* =========================================================================
+   GUIDED TUTORIAL (added)
+   Kept in its own script block so the trainer's own logic is untouched.
+   It snapshots the trainee's work, runs short live demonstrations, and puts
+   everything back exactly as it was when the tour ends or is skipped.
+   ========================================================================= */
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+var clamp = function(v,a,b){ return Math.min(b, Math.max(a, v)); };
+var T = {on:false, i:0, steps:[], snap:null};
+
+function fire(el){ if(el) el.dispatchEvent(new MouseEvent('click', {bubbles:true, cancelable:true})); }
+
+/* ---- protect the trainee's own work ---- */
+function snapshot(){
+  return {st:JSON.parse(JSON.stringify(state)), fb:$('taskFeedback').innerHTML,
+          hint:$('taskHint').classList.contains('show')};
+}
+function restore(sn){
+  Object.keys(state).forEach(function(k){ delete state[k]; });
+  Object.assign(state, JSON.parse(JSON.stringify(sn.st)));
+  $('taskFeedback').innerHTML = sn.fb;
+  $('taskHint').classList.toggle('show', sn.hint);
+}
+/* a known, healthy starting point for every step (a live fault is never shown) */
+function base(){
+  Object.assign(state, {mode:'off', redJack:'v', meterFuse:'ok', hold:false, heldLCD:null, f1:'ok',
+    iso:true, s1:false, c1:true, c2:true, c3:true, fault:'none', faultHidden:false, reveal:false,
+    selected:null, taskIdx:0, done:{}});
+  state.probes.red   = {x:250, y:660, tp:null};
+  state.probes.black = {x:355, y:660, tp:null};
+  $('taskFeedback').innerHTML = '';
+  $('taskHint').classList.remove('show');
+}
+function setup(o){
+  Object.keys(o).forEach(function(k){ if(k !== 'red' && k !== 'black') state[k] = o[k]; });
+  if(o.red)   placeProbe('red',   o.red);
+  if(o.black) placeProbe('black', o.black);
+}
+
+/* ---- the lesson ---- */
+function buildSteps(){
+  var batt = {mode:'dcv', red:'tp_bpos', black:'tp_bneg'};
+  return [
+  {t:'Welcome to the Digital Multimeter Workshop',
+   b:'This short tour shows you every part of the trainer: the <b>headlamp circuit</b>, the <b>multimeter</b> and the <b>panels on the right</b>. The circuit changes as we go to show real readings, and everything is put back exactly as you left it when the tour ends. Use <b>Next</b> and <b>Back</b> (or the \u2190 \u2192 keys). <b>Skip tour</b> or <b>Esc</b> leaves at any time.'},
+  {t:'The circuit you will test', sel:'#circuitPanel',
+   b:'A simple <b>12 V headlamp circuit</b>: battery \u2192 isolator \u2192 fuse \u2192 switch \u2192 two lamps \u2192 earth. Current leaves battery positive, flows round the circuit and returns to battery negative through the vehicle body. Nothing here can be damaged, so you can make mistakes and learn from them.'},
+  {t:'Battery and isolator', sel:'#battery,#isoHot',
+   b:'<b>B1</b> is the 12.6 V battery. The <b>battery isolator</b> is a switch in its supply lead: <b>click the blade</b> to connect or disconnect the battery. With the isolator disconnected the circuit is <b>dead</b>, which you need before measuring resistance.'},
+  {t:'Fuse F1 and lamp switch S1', sel:'#fuseBody,#s1Hot',
+   b:'<b>F1</b> is a 15 A fuse that protects the circuit. <b>S1</b> is the lamp switch: <b>click the blade</b> to switch the lamps on and off. Many tests only work with the lamps switched on, because a fault often shows up only when current is flowing.'},
+  {t:'Splice and lamps', sel:'#lamp1,#lamp2', demo:{s1:true},
+   b:'The supply splits at splice <b>SP1</b> and feeds two lamps, <b>L1</b> and <b>L2</b>, wired in <b>parallel</b> (2.4 \u03A9 each when hot). S1 is on for this demonstration. The lamp brightness follows the real voltage across each lamp, so a fault makes them dim or go out.'},
+  {t:'The earth return', sel:'#earthBolt,#strapWire,#chassis',
+   b:'This is a <b>negative-earth</b> system: the vehicle body is the return path. Both lamps return through an <b>earth strap</b> to the bolt <b>G101</b> and then the chassis, which is connected to battery negative. A poor earth gives the same symptoms as a poor supply, so always test the earth side too.'},
+  {t:'In-line joints C1, C2 and C3', sel:'#chip1g,#cb1hot', demo:{s1:true, c1:false},
+   b:'Each connector can be <b>JOINED</b> or <b>OPEN</b>: click the connector or its label to change it. <b>C1</b> carries the total current; <b>C2</b> and <b>C3</b> feed L1 and L2. In this demo S1 is on but C1 is open, so both lamps are out: opening a joint breaks the circuit. This is how you will insert the meter to measure current.'},
+  {t:'The multimeter', sel:'#meter',
+   b:'An auto-ranging digital multimeter (DMM). It has a <b>display</b>, a <b>HOLD</b> button, a <b>function dial</b> and three <b>jacks</b> for the test leads. The next steps take them one at a time.'},
+  {t:'The function dial', sel:'#dialFace', demo:{mode:'dcv'},
+   b:'Choose what to measure: <b>OFF</b>, <b>V DC</b>, <b>V AC</b>, <b>A DC</b> (current), <b>\u03A9</b> (resistance) or <b>continuity</b>. <b>Click a function name or drag the knob.</b> The dial is on V DC now. Vehicle circuits are DC, so use V DC for voltage.'},
+  {t:'Jacks and test leads', sel:'#jackA,#jackCOM,#jackV', demo:{mode:'dcv'},
+   b:'The <b>black</b> lead always stays in <b>COM</b>. The <b>red</b> lead goes in <b>V\u03A9</b> for volts, resistance and continuity, and in the fused <b>10 A</b> jack for current only. <b>Click a red jack</b> (or use the buttons in the Circuit &amp; meter controls panel) to move the red lead. It is in V\u03A9 now. The dial and the jack must <b>both</b> match what you are measuring.'},
+  {t:'Probes and the probe rest', sel:'#probeRed,#probeBlack,#probeRest', demo:{mode:'dcv'},
+   b:'The probes start in the <b>probe rest</b>. <b>Drag a probe tip onto a test point</b>, or <b>click a probe</b> (it glows) and then click a test point. <b>Park both probes</b> in the controls panel returns them to the rest.'},
+  {t:'Test points', sel:'#dot_tp_f_in,#dot_tp_f_out,#dot_tp_sw_in,#dot_tp_sw_out', demo:{mode:'dcv', red:'tp_sw_in'},
+   b:'Every blue dot is a <b>test point</b> with a code such as F1a or S1b: hover over one to see what it is. The ring around the dot takes the probe\u2019s colour when contact is made. Here the <b>red probe</b> is on <b>S1a</b>. Every code is listed in the <b>Test point legend</b>.'},
+  {t:'Volts: across the battery', sel:'#battery,#dot_tp_bpos,#dot_tp_bneg', demo:batt,
+   b:'Voltage is measured <b>in parallel</b>, across two points. Dial on <b>V DC</b>, red lead in <b>V\u03A9</b>, <b>red probe on B+</b> and <b>black probe on B\u2212</b>. With S1 off the meter reads the battery\u2019s open-circuit voltage, about <b>12.6 V</b>. Swap the probes and the reading gets a minus sign.'},
+  {t:'The display and HOLD', sel:'#lcdBox,#holdBtn', demo:batt, after:function(){ fire($('holdBtn')); },
+   b:'The display shows the function, the reading, the unit and flags such as <b>DC AUTO</b>, <b>HOLD</b> and <b>BEEP</b>. The small line under the reading names the test points the probes are on. <b>HOLD</b> freezes the reading so you can lift the probes and still read it; it is on in this demo. Press it again to go live.'},
+  {t:'The Meter reading panel', sel:'#cardReading', demo:batt,
+   b:'This panel explains in plain English what the meter is doing: the <b>dial</b>, <b>jack</b> and <b>probe</b> positions, the state of the circuit, a sentence describing the reading, and any <b>warnings</b>.'},
+  {t:'Volt-drop testing', sel:'#fuseBody,#dot_tp_f_in,#dot_tp_f_out', demo:{mode:'dcv', s1:true, red:'tp_f_in', black:'tp_f_out'},
+   b:'A <b>volt-drop test</b> finds unwanted resistance. With the <b>load switched on</b>, put the probes <b>either side of a component</b>. A good fuse and holder drops under about 0.3 V: here S1 is on and the meter shows only about <b>0.2 V</b>. A large drop means that component is the problem.'},
+  {t:'Amps: the meter goes in series', sel:'#chip1g,#cb1hot,#dot_cb1a,#dot_cb1b',
+   demo:{mode:'adc', redJack:'a', s1:true, c1:false, red:'cb1a', black:'cb1b'},
+   b:'Current must flow <b>through</b> the meter, so it goes <b>in series</b>. Dial on <b>A DC</b>, red lead in the <b>10 A</b> jack, <b>open a joint</b> (here C1) and bridge the gap: <b>red on the supply side (C1a), black on the load side (C1b)</b>. Both lamps relight through the meter, which reads the total current, about <b>9.6 A</b>.'},
+  {t:'Danger: never across a live circuit', sel:'#lcdBox',
+   demo:{mode:'adc', redJack:'a', s1:true, red:'tp_bpos', black:'tp_bneg'},
+   b:'An ammeter is almost a short circuit. Here it has been connected straight across the battery, so a huge current blew the meter\u2019s own <b>10 A fuse</b> and the display shows <b>FUSE</b>. <b>Replace meter fuse</b> puts it right. Always <b>open the circuit</b> and bridge the gap instead.'},
+  {t:'Ohms: dead circuit, isolated part', sel:'#lamp1,#dot_cb2b,#dot_tp_l1b',
+   demo:{mode:'ohm', iso:false, s1:false, c2:false, red:'cb2b', black:'tp_l1b'},
+   b:'Resistance needs the circuit <b>dead</b> (isolator disconnected, S1 off) and the part <b>isolated</b> (C2 open, so L1 is not in parallel with L2). Here the probes are across lamp L1 and the meter reads about <b>2.40 \u03A9</b>. Measure a live circuit and it shows <b>V!</b>; leave C2 joined and you would read about 1.2 \u03A9.'},
+  {t:'Continuity', sel:'#lblMode_cont', demo:{mode:'cont', iso:false},
+   b:'<b>Continuity</b> is a quick pass/fail resistance test with a buzzer. Below about <b>25 \u03A9</b> the meter shows <b>BEEP</b> and sounds. It also needs a dead circuit, and the buzzer stops the moment a probe leaves a test point. It is ideal for wires, fuses and earths, but even a 3 \u03A9 earth can beep, so confirm with a volt-drop test.'},
+  {t:'Warnings and common mistakes', sel:'#readout,#warnBox', demo:{mode:'dcv', redJack:'a', red:'tp_bpos', black:'tp_bneg'},
+   b:'When something is wrong, this panel tells you why. Here the dial is on V DC but the red lead is in the <b>10 A</b> jack, so the display shows dashes and the panel explains the fix. You will also see warnings for AC volts on a DC circuit, resistance on a live circuit, and an ammeter that is not in series.'},
+  {t:'Start here', sel:'#cardStart',
+   b:'A reminder that is always on screen: <b>1</b> turn the dial, <b>2</b> check the red lead jack, <b>3</b> place the probes, <b>4</b> read the display and press <b>Check my measurement</b>. Remember the rules: <b>volts in parallel, amps in series, ohms with the circuit dead and isolated</b>.'},
+  {t:'Guided tasks', sel:'#cardTask',
+   b:'Ten guided tasks take you from battery voltage to a hidden-fault diagnosis. Each has a title and a brief. The row of segments shows your progress: <b>blue</b> is the current task, <b>green</b> is completed.'},
+  {t:'Set-up checklist', sel:'#setupList', demo:{mode:'dcv'},
+   b:'Each task has a <b>live checklist</b>. Items turn green as you get the dial, jack, switches and probes right. For task 1 the dial, jack and S1 are already correct (<b>3 of 5 ready</b>) and the two probes are still to do. When every line is ticked your answer will pass.'},
+  {t:'Hint, Previous and Next', sel:'#taskHint,#btnPrev,#btnNext,#btnHint', after:function(){ $('taskHint').classList.add('show'); },
+   b:'<b>Previous</b> and <b>Next</b> move between tasks. If you are stuck press <b>Show hint</b>: it points you to the method rather than giving the answer away.'},
+  {t:'Check my measurement', sel:'#btnCheck,#taskFeedback', demo:batt, after:function(){ fire($('btnCheck')); },
+   b:'When your set-up is ready press <b>Check my measurement</b>. Task 1 has been completed for you here, and the feedback confirms the battery voltage. If something is missing, the feedback tells you exactly what to fix.'},
+  {t:'Circuit and meter controls', sel:'#cardControls',
+   b:'These buttons mirror the clickable parts of the drawing: the <b>isolator</b>, <b>S1</b> and the three <b>joints</b>, plus moving the <b>red lead</b> between jacks and <b>parking the probes</b>. Under <b>Put things right</b> you can replace the meter fuse, fit a new F1 fuse, or <b>reset the circuit to normal</b>.'},
+  {t:'Test point legend', sel:'#cardLegend',
+   b:'A list of every test point code and what it is. Use it to find the right place for your probes, for example <b>C2b</b> or <b>L1g</b>.'},
+  {t:'Instructor controls', sel:'#instrToggle',
+   b:'For instructors and assessors. This button shows hidden controls to <b>fit a fault</b> (blown fuse, high-resistance switch, open lamp, poor earth), <b>insert a hidden random fault</b> for task 10 and <b>reveal the live values</b>. They stay hidden by default so trainees cannot see the answer.'},
+  {t:'My diagnosis', sel:'#diagSel,#btnDiag',
+   b:'For task 10: after testing, choose what you think the fault is and press <b>Confirm</b>. If you are wrong you get a reminder of the method: battery volts, volts at the load, supply-side volt drop, then earth-side volt drop.'},
+  {t:'You are ready',
+   b:'That is everything. Start with <b>task 1</b> and work through the list, using the checklist to keep track. Press <b>? Tutorial</b> at the top right whenever you want to see this tour again.'}
+  ];
+}
+
+/* ---- spotlight + card placement ---- */
+function rectFor(step){
+  if(!step.sel) return null;
+  var els = Array.prototype.slice.call(document.querySelectorAll(step.sel)).filter(function(e){
+    var r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0;
+  });
+  if(!els.length) return null;
+  var rs = els.map(function(e){ return e.getBoundingClientRect(); });
+  return {left:Math.min.apply(null, rs.map(function(r){return r.left;})),
+          top:Math.min.apply(null, rs.map(function(r){return r.top;})),
+          right:Math.max.apply(null, rs.map(function(r){return r.right;})),
+          bottom:Math.max.apply(null, rs.map(function(r){return r.bottom;}))};
+}
+function place(){
+  if(!T.on) return;
+  var step = T.steps[T.i], card = $('tourCard'), hole = $('tourHole'), arrow = $('tourArrow');
+  var vw = window.innerWidth, vh = window.innerHeight, r = rectFor(step);
+  var cw = card.offsetWidth, ch = card.offsetHeight, M = 12;
+  if(!r){
+    hole.style.display = 'block'; hole.className = 'full';
+    hole.style.left = (vw/2) + 'px'; hole.style.top = (vh/2) + 'px'; hole.style.width = '0px'; hole.style.height = '0px';
+    arrow.style.display = 'none';
+    card.style.left = Math.max(M, (vw - cw)/2) + 'px'; card.style.top = Math.max(M, (vh - ch)/2) + 'px';
+    return;
+  }
+  /* small targets (a single test point, a jack) get a minimum 48 px highlight so they are easy to see */
+  var ex = Math.max(0, (48 - (r.right - r.left))/2), ey = Math.max(0, (48 - (r.bottom - r.top))/2), pad = 6;
+  var L = Math.max(0, r.left - pad - ex), Tp = Math.max(0, r.top - pad - ey),
+      Rt = Math.min(vw, r.right + pad + ex), Bt = Math.min(vh, r.bottom + pad + ey);
+  hole.className = ''; hole.style.display = 'block';
+  hole.style.left = L + 'px'; hole.style.top = Tp + 'px';
+  hole.style.width = (Rt - L) + 'px'; hole.style.height = (Bt - Tp) + 'px';
+  var gap = 34, cx = (L + Rt)/2, cy = (Tp + Bt)/2;
+  var space = {below:vh - Bt, above:Tp, right:vw - Rt, left:L}, side = null, x, y;
+  if(space.below >= ch + gap + M) side = 'below';
+  else if(space.above >= ch + gap + M) side = 'above';
+  else if(space.right >= cw + gap + M) side = 'right';
+  else if(space.left >= cw + gap + M) side = 'left';
+  if(!side){
+    x = clamp(cx - cw/2, M, Math.max(M, vw - cw - M)); y = clamp(Bt - ch - 20, M, Math.max(M, vh - ch - M));
+    arrow.style.display = 'none';
+  } else {
+    arrow.style.display = 'block'; arrow.style.left = ''; arrow.style.top = '';
+    if(side === 'below' || side === 'above'){
+      x = clamp(cx - cw/2, M, Math.max(M, vw - cw - M)); y = (side === 'below') ? Bt + gap : Tp - gap - ch;
+      arrow.className = (side === 'below') ? 'a-up' : 'a-down';
+      arrow.style.left = clamp(cx - x - 12, 14, cw - 38) + 'px';
+    } else {
+      y = clamp(cy - ch/2, M, Math.max(M, vh - ch - M)); x = (side === 'right') ? Rt + gap : L - gap - cw;
+      arrow.className = (side === 'right') ? 'a-left' : 'a-right';
+      arrow.style.top = clamp(cy - y - 12, 14, ch - 38) + 'px';
+    }
+  }
+  card.style.left = x + 'px'; card.style.top = y + 'px';
+}
+function show(){
+  var step = T.steps[T.i], card = $('tourCard');
+  base(); if(step.demo) setup(step.demo);
+  update();
+  if(step.after) step.after();
+  $('tcT').textContent = step.t;
+  $('tcB').innerHTML = '<p>' + step.b + '</p>';
+  $('tcC').textContent = 'Step ' + (T.i + 1) + ' of ' + T.steps.length;
+  $('tcD').innerHTML = T.steps.map(function(_, k){ return '<span class="' + (k === T.i ? 'on' : '') + '"></span>'; }).join('');
+  $('tcBack').style.visibility = T.i ? 'visible' : 'hidden';
+  var last = T.i === T.steps.length - 1;
+  $('tcNext').textContent = last ? 'Finish' : 'Next';
+  $('tcSkip').style.display = last ? 'none' : '';
+  card.style.display = 'block';
+  var first = step.sel ? document.querySelector(step.sel.split(',')[0]) : null;
+  if(first && first.scrollIntoView) first.scrollIntoView({block:'center', inline:'nearest'});
+  requestAnimationFrame(function(){ place(); var n = $('tcNext'); if(n && n.focus) n.focus({preventScroll:true}); });
+}
+function start(){
+  $('tourWelcome').classList.remove('on');
+  if(T.on) return;
+  T.snap = snapshot(); T.steps = buildSteps(); T.i = 0; T.on = true;
+  $('tourBlock').classList.add('on');
+  show();
+}
+function end(){
+  if(!T.on) return;
+  T.on = false;
+  $('tourBlock').classList.remove('on'); $('tourHole').style.display = 'none'; $('tourCard').style.display = 'none';
+  restore(T.snap); T.snap = null;
+  update();
+  var l = $('tourLaunch'); if(l && l.focus) l.focus({preventScroll:true});
+}
+function next(){ if(T.i >= T.steps.length - 1){ end(); return; } T.i++; show(); }
+function back(){ if(T.i > 0){ T.i--; show(); } }
+
+/* ---- welcome pop-up ---- */
+function welcomeClose(){
+  if($('twSkip').checked){ try{ localStorage.setItem('hfa-dmm-skipwelcome', '1'); }catch(e){} }
+  $('tourWelcome').classList.remove('on');
+}
+function maybeWelcome(){
+  var skip = false;
+  try{ skip = localStorage.getItem('hfa-dmm-skipwelcome') === '1'; }catch(e){}
+  if(!skip){ $('tourWelcome').classList.add('on'); var y = $('twYes'); if(y && y.focus) y.focus(); }
+}
+$('tourLaunch').addEventListener('click', start);
+$('tcNext').addEventListener('click', next);
+$('tcBack').addEventListener('click', back);
+$('tcSkip').addEventListener('click', end);
+$('twYes').addEventListener('click', function(){ welcomeClose(); start(); });
+$('twNo').addEventListener('click', welcomeClose);
+window.addEventListener('resize', function(){ if(T.on) place(); });
+window.addEventListener('scroll', function(){ if(T.on) place(); }, true);
+window.addEventListener('keydown', function(e){
+  var w = $('tourWelcome');
+  if(w.classList.contains('on')){ if(e.key === 'Escape'){ e.preventDefault(); welcomeClose(); } return; }
+  if(!T.on) return;
+  if(e.key === 'Escape'){ e.preventDefault(); e.stopPropagation(); end(); }
+  else if(e.key === 'ArrowRight'){ e.preventDefault(); e.stopPropagation(); next(); }
+  else if(e.key === 'ArrowLeft'){ e.preventDefault(); e.stopPropagation(); back(); }
+  else if(e.key === 'Enter' && e.target && e.target.tagName !== 'BUTTON'){ e.preventDefault(); e.stopPropagation(); next(); }
+}, true);
+/*@@HOOK@@*/
+maybeWelcome();
+})();
 </script>
 </body>
 </html>
